@@ -150,21 +150,34 @@
                 </div>
 
                 <div class="grid gap-10 md:grid-cols-12 md:gap-12">
-                    <div class="order-2 md:order-1 md:col-span-5 md:flex md:items-center">
+                    <div class="order-2 md:order-1 md:col-span-6 md:flex md:items-center">
                         <div class="w-full overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
-                            <div class="relative aspect-[4/5] w-full bg-white">
-                                <img src="{{ asset('image/empresa.jpg') }}" alt="Prefabricados Alesa" class="absolute inset-0 h-full w-full object-cover" />
+                            <div class="relative aspect-[4/3] w-full bg-white">
+                                <img src="{{ asset($about?->image_path ?: 'image/empresa.jpg') }}" alt="Prefabricados Alesa" class="absolute inset-0 h-full w-full object-cover" />
                             </div>
                         </div>
                     </div>
-                    <div class="order-1 md:order-2 md:col-span-7">
+                    <div class="order-1 md:order-2 md:col-span-6">
                         <div class="max-w-2xl">
                             <h2 class="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-                                Empresa 100% campechana con tecnología alemana
+                                {{ $about?->headline ?? 'Empresa 100% campechana con tecnología alemana' }}
                             </h2>
-                            <p class="mt-5 text-sm leading-relaxed text-zinc-600 md:text-base">
-                                {{ $about?->body ?? 'En Prefabricados Alesa combinamos experiencia local con procesos industriales para entregar piezas consistentes, resistentes y listas para obra. Trabajamos con tecnología alemana (Euroblock 2005) y un enfoque de calidad en cada lote.' }}
-                            </p>
+
+                            <div class="mt-6 grid gap-4">
+                                <div>
+                                    <p class="text-sm font-extrabold tracking-widest text-slate-900 uppercase">Misión</p>
+                                    <p class="mt-3 text-sm leading-relaxed text-zinc-600 md:text-base">
+                                        {{ $about?->mission ?? 'Fabricar productos de calidad, en cantidades suficientes y a precios justos; contribuyendo así, al desarrollo de la región.' }}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-extrabold tracking-widest text-slate-900 uppercase">Historia</p>
+                                    <p class="mt-3 text-sm leading-relaxed text-zinc-600 md:text-base">
+                                        {{ $about?->history ?? $about?->body ?? 'Prefabricados Alesa, S.A. de C.V., se fundó en el año de 2002 y fue el 3 de Agosto de 2004 cuando iniciamos operaciones, después de dos años de llevar el proyecto poco a poco y sorteando la difícil situación económica que imperaba. Somos una empresa 100% campechana que tomando lo más alta tecnología disponible, se preocupa por competir primero con calidad; por esta razón se adquirió una máquina bloquera de origen Alemán, marca Euroblock modelo 2005, además de que cuidamos la calidad de la materia prima para la elaboración de nuestros productos.' }}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mt-8 grid gap-4 sm:grid-cols-2">
@@ -173,37 +186,20 @@
                                     <span class="grid size-10 place-items-center rounded-xl bg-[#E98332]/15 text-[#E98332]">
                                         <i class="fa-solid fa-award"></i>
                                     </span>
-                                    <p class="text-sm font-semibold">Calidad industrial</p>
+                                    <p class="text-sm font-semibold">{{ $about?->card_1_title ?? 'Calidad industrial' }}</p>
                                 </div>
-                                <p class="mt-4 text-sm text-zinc-600">Control y consistencia para piezas listas para instalar.</p>
+                                <p class="mt-4 text-sm text-zinc-600">{{ $about?->card_1_body ?? 'Control y consistencia para piezas listas para instalar.' }}</p>
                             </div>
                             <div class="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
                                 <div class="flex items-center gap-3">
                                     <span class="grid size-10 place-items-center rounded-xl bg-[#008D62]/15 text-[#008D62]">
                                         <i class="fa-solid fa-gears"></i>
                                     </span>
-                                    <p class="text-sm font-semibold">Tecnología Euroblock</p>
+                                    <p class="text-sm font-semibold">{{ $about?->card_2_title ?? 'Tecnología Euroblock' }}</p>
                                 </div>
-                                <p class="mt-4 text-sm text-zinc-600">Tecnología alemana (Euroblock 2005) como base de producción.</p>
+                                <p class="mt-4 text-sm text-zinc-600">{{ $about?->card_2_body ?? 'Tecnología alemana (Euroblock 2005) como base de producción.' }}</p>
                             </div>
-                            <div class="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                                <div class="flex items-center gap-3">
-                                    <span class="grid size-10 place-items-center rounded-xl bg-black/5 text-[#1A1A1A]">
-                                        <i class="fa-solid fa-truck-fast"></i>
-                                    </span>
-                                    <p class="text-sm font-semibold">Entrega y logística</p>
-                                </div>
-                                <p class="mt-4 text-sm text-zinc-600">Tiempos claros y atención directa para obra y proyectos.</p>
-                            </div>
-                            <div class="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                                <div class="flex items-center gap-3">
-                                    <span class="grid size-10 place-items-center rounded-xl bg-[#E98332]/15 text-[#E98332]">
-                                        <i class="fa-solid fa-helmet-safety"></i>
-                                    </span>
-                                    <p class="text-sm font-semibold">Asesoría</p>
-                                </div>
-                                <p class="mt-4 text-sm text-zinc-600">Te ayudamos a elegir la mejor opción según tu necesidad.</p>
-                            </div>
+                          
                         </div>
                     </div>
                 </div>
