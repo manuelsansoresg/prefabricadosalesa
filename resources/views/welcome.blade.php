@@ -47,8 +47,8 @@
         <header class="fixed inset-x-0 top-4 z-50">
             <nav class="mx-auto flex w-[min(1100px,calc(100%-2rem))] items-center justify-between rounded-2xl border border-black/10 bg-white/70 px-4 py-3 shadow-sm backdrop-blur-xl">
                 <a href="#inicio" class="flex items-center gap-3">
-                    <span class="grid h-9 w-12 place-items-center overflow-hidden rounded-xl bg-white">
-                        <img src="{{ asset('image/logosuperior.gif') }}" alt="Prefabricados Alesa" class="h-9 w-auto object-contain" />
+                    <span class="grid h-9 w-12 place-items-center overflow-hidden rounded-xl">
+                        <img src="{{ asset('image/logo_transparente.png') }}" alt="Prefabricados Alesa" class="h-9 w-auto object-contain" />
                     </span>
                     <span class="text-sm font-semibold tracking-wide">Prefabricados Alesa</span>
                 </a>
@@ -140,18 +140,34 @@
 
         <section id="nosotros" class="relative">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
+                <div class="mb-12 flex items-center justify-center gap-4">
+                    <div class="h-px w-14 bg-slate-200"></div>
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-5 py-2 text-xs font-extrabold tracking-[0.32em] text-[#E98332] uppercase">
+                       
+                        Nosotros
+                    </span>
+                    <div class="h-px w-14 bg-slate-200"></div>
+                </div>
+
                 <div class="grid gap-10 md:grid-cols-12 md:gap-12">
-                    <div class="md:col-span-5">
-                        <p class="text-xs font-semibold tracking-[0.24em] text-[#E98332]">NOSOTROS</p>
-                        <h2 class="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
-                            Empresa 100% campechana con tecnología alemana
-                        </h2>
-                        <p class="mt-5 text-sm leading-relaxed text-zinc-600 md:text-base">
-                            {{ $about?->body ?? 'En Prefabricados Alesa combinamos experiencia local con procesos industriales para entregar piezas consistentes, resistentes y listas para obra. Trabajamos con tecnología alemana (Euroblock 2005) y un enfoque de calidad en cada lote.' }}
-                        </p>
+                    <div class="order-2 md:order-1 md:col-span-5 md:flex md:items-center">
+                        <div class="w-full overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
+                            <div class="relative aspect-[4/5] w-full bg-white">
+                                <img src="{{ asset('image/empresa.jpg') }}" alt="Prefabricados Alesa" class="absolute inset-0 h-full w-full object-cover" />
+                            </div>
+                        </div>
                     </div>
-                    <div class="md:col-span-7">
-                        <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="order-1 md:order-2 md:col-span-7">
+                        <div class="max-w-2xl">
+                            <h2 class="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
+                                Empresa 100% campechana con tecnología alemana
+                            </h2>
+                            <p class="mt-5 text-sm leading-relaxed text-zinc-600 md:text-base">
+                                {{ $about?->body ?? 'En Prefabricados Alesa combinamos experiencia local con procesos industriales para entregar piezas consistentes, resistentes y listas para obra. Trabajamos con tecnología alemana (Euroblock 2005) y un enfoque de calidad en cada lote.' }}
+                            </p>
+                        </div>
+
+                        <div class="mt-8 grid gap-4 sm:grid-cols-2">
                             <div class="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
                                 <div class="flex items-center gap-3">
                                     <span class="grid size-10 place-items-center rounded-xl bg-[#E98332]/15 text-[#E98332]">
@@ -196,10 +212,18 @@
 
         <section id="productos" class="bg-zinc-50">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
+                <div class="mb-12 flex items-center justify-center gap-4">
+                    <div class="h-px w-14 bg-slate-200"></div>
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-5 py-2 text-xs font-extrabold tracking-[0.32em] text-[#E98332] uppercase">
+                       
+                        Productos
+                    </span>
+                    <div class="h-px w-14 bg-slate-200"></div>
+                </div>
+
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <p class="text-xs font-semibold tracking-[0.24em] text-[#008D62]">PRODUCTOS</p>
-                        <h2 class="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">Catálogo</h2>
+                        <h2 class="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Catálogo</h2>
                         <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
                             Grid dinámico con detalles. Pasa el cursor para ver el efecto.
                         </p>
@@ -234,9 +258,17 @@
 
         <section id="galeria">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
+                <div class="mb-12 flex items-center justify-center gap-4">
+                    <div class="h-px w-14 bg-slate-200"></div>
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-5 py-2 text-xs font-extrabold tracking-[0.32em] text-[#E98332] uppercase">
+                        
+                        Galería
+                    </span>
+                    <div class="h-px w-14 bg-slate-200"></div>
+                </div>
+
                 <div>
-                    <p class="text-xs font-semibold tracking-[0.24em] text-[#E98332]">GALERÍA</p>
-                    <h2 class="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">Obra y producción</h2>
+                    <h2 class="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Obra y producción</h2>
                     <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
                         Layout tipo masonry con lightbox.
                     </p>
@@ -268,10 +300,18 @@
 
         <section id="contacto" class="bg-zinc-50">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
+                <div class="mb-12 flex items-center justify-center gap-4">
+                    <div class="h-px w-14 bg-slate-200"></div>
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-5 py-2 text-xs font-extrabold tracking-[0.32em] text-[#E98332] uppercase">
+                        
+                        Contacto
+                    </span>
+                    <div class="h-px w-14 bg-slate-200"></div>
+                </div>
+
                 <div class="grid gap-10 md:grid-cols-12 md:gap-12">
                     <div class="md:col-span-5">
-                        <p class="text-xs font-semibold tracking-[0.24em] text-[#008D62]">CONTACTO</p>
-                        <h2 class="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">Hablemos de tu proyecto</h2>
+                        <h2 class="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Hablemos de tu proyecto</h2>
                         <p class="mt-4 text-sm text-zinc-600 md:text-base">
                             Ubicación: Libramiento carretera de Campeche a Uayamón KM. 2.6
                         </p>
