@@ -321,7 +321,19 @@
                     <div class="h-px w-14 bg-slate-200"></div>
                 </div>
 
-                <div class="grid gap-10 md:grid-cols-12 md:gap-12">
+                <div class="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
+                    <iframe
+                        title="Mapa Prefabricados Alesa"
+                        class="h-[480px] w-full md:h-[560px]"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q=Libramiento%20carretera%20de%20Campeche%20a%20Uayam%C3%B3n%20KM.%202.6&output=embed"
+                    ></iframe>
+                </div>
+
+                <div class="mt-10 h-px w-full bg-slate-200/80"></div>
+
+                <div class="mt-10 grid gap-10 md:grid-cols-12 md:gap-12">
                     <div class="md:col-span-5">
                         <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Hablemos de tu proyecto</h2>
                         <p class="mt-4 text-sm text-zinc-600 md:text-base">
@@ -383,6 +395,7 @@
                                 <input type="text" name="name" placeholder="Nombre" class="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden" />
                                 <input type="email" name="email" placeholder="Correo" class="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden" />
                             </div>
+                            <input type="tel" name="phone" placeholder="Teléfono" class="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden" />
                             <textarea name="message" rows="5" placeholder="Mensaje" class="w-full resize-y rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden"></textarea>
                             <button type="button" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#008D62] px-6 py-3 text-sm font-semibold text-white hover:bg-[#008D62]/90">
                                 <i class="fa-solid fa-paper-plane"></i>
@@ -391,15 +404,38 @@
                         </form>
                     </div>
 
-                    <div class="md:col-span-7">
-                        <div class="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
-                            <iframe
-                                title="Mapa Prefabricados Alesa"
-                                class="h-[420px] w-full"
-                                loading="lazy"
-                                referrerpolicy="no-referrer-when-downgrade"
-                                src="https://www.google.com/maps?q=Libramiento%20carretera%20de%20Campeche%20a%20Uayam%C3%B3n%20KM.%202.6&output=embed"
-                            ></iframe>
+                    <div class="md:col-span-7 max-md:mt-2 md:border-l md:border-black/10 md:pl-10">
+                        <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Directorio</h3>
+                        <p class="mt-3 text-sm text-zinc-600">Datos demo (se puede conectar a configuración después).</p>
+
+                        <div class="mt-8 grid gap-7 text-zinc-700">
+                            <div>
+                                <p class="text-xs font-mono font-bold tracking-widest text-[#E98332] uppercase">Director General</p>
+                                <p class="mt-2 text-lg font-semibold text-slate-900">Arq. Alejandro Berrón De la Peña</p>
+                                <p class="mt-1 text-sm text-zinc-600">aberron@prefabricadosalesa.com</p>
+                                <p class="mt-1 text-sm text-zinc-600">+52 981 000 0000</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs font-mono font-bold tracking-widest text-[#008D62] uppercase">Gerente</p>
+                                <p class="mt-2 text-lg font-semibold text-slate-900">L.I. Jorge L. Farfán Zapata</p>
+                                <p class="mt-1 text-sm text-zinc-600">jfarfan@prefabricadosalesa.com</p>
+                                <p class="mt-1 text-sm text-zinc-600">+52 981 000 0001</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs font-mono font-bold tracking-widest text-[#E98332] uppercase">Contabilidad</p>
+                                <p class="mt-2 text-lg font-semibold text-slate-900">C.P. Juan Carlos Alatorre Manjarrez</p>
+                                <p class="mt-1 text-sm text-zinc-600">jalatorre@prefabricadosalesa.com</p>
+                                <p class="mt-1 text-sm text-zinc-600">+52 981 000 0002</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs font-mono font-bold tracking-widest text-[#008D62] uppercase">Atención a clientes</p>
+                                <p class="mt-2 text-lg font-semibold text-slate-900">Reyna Castro Vázquez</p>
+                                <p class="mt-1 text-sm text-zinc-600">rcastro@prefabricadosalesa.com</p>
+                                <p class="mt-1 text-sm text-zinc-600">+52 981 000 0003</p>
+                            </div>
                         </div>
                     </div>
                 </div>
