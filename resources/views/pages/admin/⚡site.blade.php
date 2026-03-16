@@ -19,6 +19,9 @@ new #[Title('Sitio')] class extends Component {
     public string $newPhone = '';
     public string $newWhatsappUrl = '';
 
+    public string $whatsappNumber = '';
+    public string $whatsappMessage = '';
+
     public $heroVideo = null;
     public ?string $currentHeroVideoPath = null;
 
@@ -31,6 +34,8 @@ new #[Title('Sitio')] class extends Component {
         }
 
         $this->currentHeroVideoPath = $settings->hero_video_path;
+        $this->whatsappNumber = (string) ($settings->whatsapp_number ?? '');
+        $this->whatsappMessage = (string) ($settings->whatsapp_message ?? '');
 
         $this->emails = $settings->contactEmails()
             ->get()
@@ -65,6 +70,21 @@ new #[Title('Sitio')] class extends Component {
     private function settings(): SiteSetting
     {
         return SiteSetting::query()->first() ?? SiteSetting::query()->create([]);
+    }
+
+    public function saveWhatsappButton(): void
+    {
+        $this->validate([
+            'whatsappNumber' => ['nullable', 'string', 'max:30'],
+            'whatsappMessage' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $settings = $this->settings();
+
+        $settings->update([
+            'whatsapp_number' => trim($this->whatsappNumber),
+            'whatsapp_message' => trim($this->whatsappMessage),
+        ]);
     }
 
     public function addEmail(): void
@@ -313,6 +333,20 @@ new #[Title('Sitio')] class extends Component {
                     <flux:button variant="primary" type="submit">Subir video</flux:button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div class="rounded-xl border border-zinc-200 bg-white p-6">
+        <flux:heading size="sm">Botón flotante de WhatsApp</flux:heading>
+        <flux:text class="mt-1 text-sm text-zinc-600">Configura el número y el mensaje prellenado del botón.</flux:text>
+
+        <div class="mt-5 grid gap-4 lg:grid-cols-2">
+            <flux:input wire:model="whatsappNumber" label="Número (con lada)" type="text" />
+            <flux:textarea wire:model="whatsappMessage" label="Mensaje" rows="3" />
+        </div>
+
+        <div class="mt-5 flex items-center justify-end">
+            <flux:button variant="primary" wire:click="saveWhatsappButton">Guardar</flux:button>
         </div>
     </div>
 </div>

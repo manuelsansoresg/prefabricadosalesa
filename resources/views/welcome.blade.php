@@ -9,7 +9,7 @@
             lightboxOpen: false,
             lightboxSrc: null,
             heroMuted: true,
-            heroPlaying: false,
+            mobileMenuOpen: false,
             openLightbox(src) { this.lightboxSrc = src; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; },
             closeLightbox() { this.lightboxOpen = false; this.lightboxSrc = null; document.body.style.overflow = ''; },
             toggleHeroMute() {
@@ -18,71 +18,75 @@
                 el.muted = !el.muted;
                 this.heroMuted = el.muted;
             },
-            toggleHeroPlay() {
-                const el = this.$refs.heroVideo;
-                if (!el) return;
-                if (el.paused) {
-                    el.play();
-                    this.heroPlaying = true;
-                    return;
-                }
-                el.pause();
-                this.heroPlaying = false;
-            },
         }"
         x-init="
             if ($refs.heroVideo) {
-                $refs.heroVideo.pause();
                 $refs.heroVideo.muted = true;
                 heroMuted = true;
-                heroPlaying = false;
             }
 
             if (window.gsap) {
                 gsap.from('[data-animate=\"fade-up\"]', { y: 18, opacity: 0, duration: 0.9, stagger: 0.08, ease: 'power2.out' });
             }
         "
-        @keydown.escape.window="closeLightbox()"
+        @keydown.escape.window="closeLightbox(); mobileMenuOpen = false"
     >
-        <header class="fixed inset-x-0 top-4 z-50">
-            <nav class="mx-auto flex w-[min(1100px,calc(100%-2rem))] items-center justify-between rounded-2xl border border-black/10 bg-white/70 px-4 py-3 shadow-sm backdrop-blur-xl">
-                <a href="#inicio" class="flex items-center gap-3">
-                    <span class="grid h-9 w-12 place-items-center overflow-hidden rounded-xl">
-                        <img src="{{ asset('image/logo_transparente.png') }}" alt="Prefabricados Alesa" class="h-9 w-auto object-contain" />
-                    </span>
-                    <span class="text-sm font-semibold tracking-wide">Prefabricados Alesa</span>
-                </a>
+        <header class="fixed inset-x-0 top-0 z-50">
+            <nav class="w-full bg-white">
+                <div class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center justify-between py-4">
+                    <a href="#inicio" class="flex items-center gap-3">
+                        <img
+                            src="{{ asset('image/logo_transparente.png') }}"
+                            alt="Prefabricados Alesa"
+                            class="!h-12 !w-auto object-contain md:!h-14"
+                        />
+                    </a>
 
-                <div class="hidden items-center gap-6 text-sm text-black/70 md:flex">
-                    <a href="#inicio" class="hover:text-black">Inicio</a>
-                    <a href="#nosotros" class="hover:text-black">Nosotros</a>
-                    <a href="#productos" class="hover:text-black">Productos</a>
-                    <a href="#galeria" class="hover:text-black">Galería</a>
-                    <a href="#contacto" class="hover:text-black">Contacto</a>
+                    <div class="hidden items-center gap-8 text-sm font-medium tracking-wide text-[#1A1A1A] md:flex">
+                        <a href="#inicio" class="transition-colors hover:text-[#E98332]">Inicio</a>
+                        <a href="#nosotros" class="transition-colors hover:text-[#E98332]">Nosotros</a>
+                        <a href="#productos" class="transition-colors hover:text-[#E98332]">Productos</a>
+                        <a href="#galeria" class="transition-colors hover:text-[#E98332]">Galería</a>
+                        <a href="#contacto" class="transition-colors hover:text-[#E98332]">Contacto</a>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button
+                            type="button"
+                            class="inline-flex size-10 items-center justify-center rounded-xl border border-black/10 text-[#1A1A1A] hover:bg-black/5 md:hidden"
+                            @click="mobileMenuOpen = !mobileMenuOpen"
+                            :aria-expanded="mobileMenuOpen.toString()"
+                            aria-controls="mobile-menu"
+                            aria-label="Abrir menú"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 6h16"></path>
+                                <path d="M4 12h16"></path>
+                                <path d="M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="hidden rounded-xl bg-black/5 px-4 py-2 text-sm font-medium text-black hover:bg-black/10 md:inline-flex" wire:navigate>
-                            Panel
-                        </a>
-                    @else
-                        @if (Route::has('login'))
-                            <a href="{{ route('login') }}" class="hidden rounded-xl bg-black/5 px-4 py-2 text-sm font-medium text-black hover:bg-black/10 md:inline-flex" wire:navigate>
-                                Acceso
-                            </a>
-                        @endif
-                    @endauth
-
-                    <a href="#contacto" class="inline-flex items-center gap-2 rounded-xl bg-[#008D62] px-4 py-2 text-sm font-semibold text-white hover:bg-[#008D62]/90">
-                        <span>Cotizar</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
+                <div
+                    id="mobile-menu"
+                    class="border-t border-black/10 bg-white md:hidden"
+                    x-show="mobileMenuOpen"
+                    x-transition
+                    @click.outside="mobileMenuOpen = false"
+                >
+                    <div class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl flex-col gap-3 py-4 text-sm font-medium tracking-wide text-[#1A1A1A]">
+                        <a href="#inicio" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Inicio</a>
+                        <a href="#nosotros" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Nosotros</a>
+                        <a href="#productos" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Productos</a>
+                        <a href="#galeria" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Galería</a>
+                        <a href="#contacto" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Contacto</a>
+                    </div>
                 </div>
             </nav>
         </header>
 
-        <section id="inicio" class="relative min-h-[100svh] overflow-hidden">
+        <section id="inicio" class="relative min-h-[75svh] overflow-hidden sm:min-h-[100svh]">
             <div class="absolute inset-0">
                 <video
                     x-ref="heroVideo"
@@ -90,6 +94,8 @@
                     preload="metadata"
                     playsinline
                     muted
+                    autoplay
+                    loop
                 >
                     <source src="{{ asset($siteSettings?->hero_video_path ?: 'videos/hero.mp4') }}" type="video/mp4" />
                 </video>
@@ -97,7 +103,7 @@
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(233,131,50,0.25),transparent_40%),radial-gradient(circle_at_80%_35%,rgba(0,141,98,0.25),transparent_45%)]"></div>
             </div>
 
-            <div class="relative mx-auto flex w-[min(1100px,calc(100%-2rem))] flex-col justify-end pb-18 pt-36 md:pb-20">
+            <div class="relative mx-auto flex w-[min(1100px,calc(100%-2rem))] flex-col justify-end pb-18 pt-28 md:pb-20 md:pt-36">
                 <div class="max-w-2xl">
                     <p data-animate="fade-up" class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-white/80">
                         <span class="inline-block size-2 rounded-full bg-[#008D62]"></span>
@@ -105,14 +111,13 @@
                     </p>
 
                     <h1 data-animate="fade-up" class="mt-6 text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-                        Prefabricados industriales con
+                        Construye con 
                         <span class="text-[#E98332]">calidad</span>
-                        y
-                        <span class="text-[#008D62]">precisión</span>
+                        lo que tu proyecto exige
                     </h1>
 
                     <p data-animate="fade-up" class="mt-5 text-base leading-relaxed text-white/75 md:text-lg">
-                        Soluciones confiables para obra: productos prefabricados, materiales y maquinaria con atención profesional.
+                        Tecnología alemana y calidad industrial al servicio de la obra en Campeche. Productos de alto rendimiento para resultados que duran.
                     </p>
 
                     <div data-animate="fade-up" class="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -120,17 +125,13 @@
                             <i class="fa-solid fa-layer-group"></i>
                             Ver productos
                         </a>
-                        <button type="button" class="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10" @click="toggleHeroPlay()">
-                            <span x-show="!heroPlaying"><i class="fa-solid fa-play"></i> Reproducir video</span>
-                            <span x-show="heroPlaying"><i class="fa-solid fa-pause"></i> Pausar video</span>
-                        </button>
                     </div>
                 </div>
             </div>
 
             <button
                 type="button"
-                class="absolute bottom-6 right-6 z-10 grid size-12 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white backdrop-blur-xl hover:bg-white/10"
+                class="absolute bottom-6 left-6 z-10 grid size-12 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white backdrop-blur-xl hover:bg-white/10"
                 @click="toggleHeroMute()"
                 aria-label="Mutear o desmutear video"
             >
@@ -142,7 +143,7 @@
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
-                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-5 py-2 text-xs font-extrabold tracking-[0.32em] text-[#E98332] uppercase">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
                        
                         Nosotros
                     </span>
@@ -159,7 +160,7 @@
                     </div>
                     <div class="order-1 md:order-2 md:col-span-6">
                         <div class="max-w-2xl">
-                            <h2 class="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
+                            <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
                                 {{ $about?->headline ?? 'Empresa 100% campechana con tecnología alemana' }}
                             </h2>
 
@@ -174,7 +175,15 @@
                                 <div>
                                     <p class="text-sm font-extrabold tracking-widest text-slate-900 uppercase">Historia</p>
                                     <p class="mt-3 text-sm leading-relaxed text-zinc-600 md:text-base">
-                                        {{ $about?->history ?? $about?->body ?? 'Prefabricados Alesa, S.A. de C.V., se fundó en el año de 2002 y fue el 3 de Agosto de 2004 cuando iniciamos operaciones, después de dos años de llevar el proyecto poco a poco y sorteando la difícil situación económica que imperaba. Somos una empresa 100% campechana que tomando lo más alta tecnología disponible, se preocupa por competir primero con calidad; por esta razón se adquirió una máquina bloquera de origen Alemán, marca Euroblock modelo 2005, además de que cuidamos la calidad de la materia prima para la elaboración de nuestros productos.' }}
+                                        @php
+                                            $historyText =
+                                                $about?->history ??
+                                                $about?->body ??
+                                                'Prefabricados Alesa, S.A. de C.V., se fundó en el año de 2002 y fue el 3 de Agosto de 2004 cuando iniciamos operaciones, después de dos años de llevar el proyecto poco a poco y sorteando la difícil situación económica que imperaba. Somos una empresa 100% campechana que tomando lo más alta tecnología disponible, se preocupa por competir primero con calidad; por esta razón se adquirió una máquina bloquera de origen Alemán, marca Euroblock modelo 2005, además de que cuidamos la calidad de la materia prima para la elaboración de nuestros productos.';
+                                            $historyHtml = e($historyText);
+                                            $historyHtml = preg_replace('/\b(2004|2005|modelo\s+\d{4})\b/iu', '<span class="font-mono font-semibold">$0</span>', $historyHtml);
+                                        @endphp
+                                        {!! $historyHtml !!}
                                     </p>
                                 </div>
                             </div>
@@ -197,7 +206,14 @@
                                     </span>
                                     <p class="text-sm font-semibold">{{ $about?->card_2_title ?? 'Tecnología Euroblock' }}</p>
                                 </div>
-                                <p class="mt-4 text-sm text-zinc-600">{{ $about?->card_2_body ?? 'Tecnología alemana (Euroblock 2005) como base de producción.' }}</p>
+                                <p class="mt-4 text-sm text-zinc-600">
+                                    @php
+                                        $card2Text = $about?->card_2_body ?? 'Tecnología alemana (Euroblock 2005) como base de producción.';
+                                        $card2Html = e($card2Text);
+                                        $card2Html = preg_replace('/\b(2004|2005|modelo\s+\d{4})\b/iu', '<span class="font-mono font-semibold">$0</span>', $card2Html);
+                                    @endphp
+                                    {!! $card2Html !!}
+                                </p>
                             </div>
                           
                         </div>
@@ -210,7 +226,7 @@
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
-                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-5 py-2 text-xs font-extrabold tracking-[0.32em] text-[#E98332] uppercase">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
                        
                         Productos
                     </span>
@@ -219,7 +235,7 @@
 
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <h2 class="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Catálogo</h2>
+                        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Catálogo</h2>
                         <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
                             Grid dinámico con detalles. Pasa el cursor para ver el efecto.
                         </p>
@@ -256,7 +272,7 @@
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
-                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-5 py-2 text-xs font-extrabold tracking-[0.32em] text-[#E98332] uppercase">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
                         
                         Galería
                     </span>
@@ -264,7 +280,7 @@
                 </div>
 
                 <div>
-                    <h2 class="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Obra y producción</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Obra y producción</h2>
                     <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
                         Layout tipo masonry con lightbox.
                     </p>
@@ -298,7 +314,7 @@
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
-                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-5 py-2 text-xs font-extrabold tracking-[0.32em] text-[#E98332] uppercase">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
                         
                         Contacto
                     </span>
@@ -307,7 +323,7 @@
 
                 <div class="grid gap-10 md:grid-cols-12 md:gap-12">
                     <div class="md:col-span-5">
-                        <h2 class="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Hablemos de tu proyecto</h2>
+                        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Hablemos de tu proyecto</h2>
                         <p class="mt-4 text-sm text-zinc-600 md:text-base">
                             Ubicación: Libramiento carretera de Campeche a Uayamón KM. 2.6
                         </p>
@@ -321,7 +337,7 @@
                             <div class="mt-6 grid gap-4 rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
                                 @if ($contactEmails->isNotEmpty())
                                     <div>
-                                        <p class="text-xs font-semibold tracking-[0.24em] text-[#E98332]">CORREOS</p>
+                                        <p class="text-xs font-mono font-bold tracking-widest text-[#E98332] uppercase">Correos</p>
                                         <div class="mt-3 grid gap-2 text-sm text-zinc-700">
                                             @foreach ($contactEmails as $email)
                                                 <a class="inline-flex items-center gap-2 hover:text-[#008D62]" href="mailto:{{ $email->email }}">
@@ -335,7 +351,7 @@
 
                                 @if ($contactPhones->isNotEmpty())
                                     <div>
-                                        <p class="text-xs font-semibold tracking-[0.24em] text-[#008D62]">TELÉFONOS</p>
+                                        <p class="text-xs font-mono font-bold tracking-widest text-[#008D62] uppercase">Teléfonos</p>
                                         <div class="mt-3 grid gap-2 text-sm text-zinc-700">
                                             @foreach ($contactPhones as $phone)
                                                 @php
@@ -391,7 +407,7 @@
         </section>
 
         <footer class="border-t border-black/10 py-10">
-            <div class="mx-auto flex w-[min(1100px,calc(100%-2rem))] flex-col gap-4 text-sm text-zinc-600 md:flex-row md:items-center md:justify-between">
+            <div class="mx-auto flex w-[min(1100px,calc(100%-2rem))] flex-col gap-4 text-sm font-light text-zinc-600 md:flex-row md:items-center md:justify-between">
                 <p>© {{ now()->year }} Prefabricados Alesa</p>
                 <div class="flex items-center gap-4">
                     <a href="#inicio" class="hover:text-black">Inicio</a>
@@ -399,6 +415,32 @@
                 </div>
             </div>
         </footer>
+
+        @php
+            $whatsappNumber = trim((string) ($siteSettings?->whatsapp_number ?? ''));
+            $whatsappMessage = trim((string) ($siteSettings?->whatsapp_message ?? ''));
+            $whatsappDigits = preg_replace('/\D+/', '', $whatsappNumber);
+            $whatsappHref = '';
+
+            if ($whatsappDigits !== '') {
+                $whatsappHref = 'https://wa.me/'.$whatsappDigits;
+                if ($whatsappMessage !== '') {
+                    $whatsappHref .= '?text='.rawurlencode($whatsappMessage);
+                }
+            }
+        @endphp
+
+        @if ($whatsappHref !== '')
+            <a
+                href="{{ $whatsappHref }}"
+                target="_blank"
+                rel="noopener"
+                class="fixed bottom-6 right-6 z-[55] grid size-14 place-items-center rounded-full bg-[#008D62] text-white shadow-lg shadow-black/20 hover:bg-[#008D62]/90"
+                aria-label="Abrir WhatsApp"
+            >
+                <i class="fa-brands fa-whatsapp text-2xl"></i>
+            </a>
+        @endif
 
         <div
             class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4"

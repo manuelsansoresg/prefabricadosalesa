@@ -9,6 +9,8 @@ class SiteSetting extends Model
 {
     protected $fillable = [
         'hero_video_path',
+        'whatsapp_number',
+        'whatsapp_message',
     ];
 
     public function contactEmails(): HasMany
