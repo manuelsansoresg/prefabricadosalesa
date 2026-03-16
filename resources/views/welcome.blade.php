@@ -294,7 +294,7 @@
                             @click="openLightbox('{{ asset($image->image_path) }}')"
                         >
                             <img
-                                src="{{ asset($image->image_path) }}"
+                                src="{{ asset($image->thumb_path ?: $image->image_path) }}"
                                 alt="Galería"
                                 class="h-auto w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                                 loading="lazy"

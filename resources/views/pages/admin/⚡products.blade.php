@@ -64,7 +64,7 @@ new #[Title('Productos')] class extends Component {
             $fileName = now()->format('YmdHis').'-'.Str::random(12).'.'.$extension;
             $target = $directory.DIRECTORY_SEPARATOR.$fileName;
 
-            File::put($target, File::get($this->image->getRealPath()));
+            File::copy($this->image->getRealPath(), $target);
 
             $product->image_path = 'image/products/'.$fileName;
 
@@ -102,7 +102,7 @@ new #[Title('Productos')] class extends Component {
             <flux:heading>Productos</flux:heading>
             <flux:subheading>Administra el catálogo: imagen, título y descripción.</flux:subheading>
         </div>
-        <flux:button variant="primary" wire:click="create">Nuevo producto</flux:button>
+        <flux:button variant="primary" type="button" wire:click="create">Nuevo producto</flux:button>
     </div>
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -118,8 +118,8 @@ new #[Title('Productos')] class extends Component {
                             <flux:text class="mt-1 text-sm text-zinc-600">{{ $product->description }}</flux:text>
                         </div>
                         <div class="flex shrink-0 items-center gap-2">
-                            <flux:button variant="filled" size="sm" wire:click="edit({{ $product->id }})">Editar</flux:button>
-                            <flux:button variant="danger" size="sm" wire:click="delete({{ $product->id }})">Eliminar</flux:button>
+                            <flux:button variant="filled" size="sm" type="button" wire:click="edit({{ $product->id }})">Editar</flux:button>
+                            <flux:button variant="danger" size="sm" type="button" wire:click="delete({{ $product->id }})">Eliminar</flux:button>
                         </div>
                     </div>
                 </div>
@@ -131,8 +131,8 @@ new #[Title('Productos')] class extends Component {
         @endforelse
     </div>
 
-    <flux:modal name="product-editor" :show="$showEditor" focusable class="max-w-2xl">
-        <form wire:submit="save" class="space-y-6">
+    <flux:modal name="product-editor" wire:model="showEditor" focusable class="max-w-2xl">
+        <form wire:submit.prevent="save" class="space-y-6">
             <div>
                 <flux:heading size="lg">{{ $editingId ? 'Editar producto' : 'Nuevo producto' }}</flux:heading>
                 <flux:subheading>Sube solo imágenes jpg, png o webp.</flux:subheading>
