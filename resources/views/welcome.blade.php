@@ -160,27 +160,29 @@
             </div>
 
             <div class="relative flex min-h-[75svh] flex-col justify-center p-10 sm:min-h-[100svh] sm:p-16">
-                <div class="w-full max-w-2xl md:max-w-[45%] lg:max-w-[40%]">
-                    <p data-animate="fade-up" class="inline-flex w-fit items-center gap-2 rounded-full bg-[#008D62] px-4 py-2 text-xs font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.1)]">
+                <div class="w-full max-w-2xl rounded-3xl bg-white/55 p-6 backdrop-blur-sm md:max-w-[45%] lg:max-w-[40%]">
+                    <p data-reveal style="transition-delay:0.2s" class="al-reveal al-reveal-left inline-flex w-fit items-center gap-2 rounded-full bg-[#008D62] px-4 py-2 text-xs font-bold text-white">
                         <span class="inline-block size-2 rounded-full bg-white/90"></span>
                         Materiales de construcción y renta de maquinaria
                     </p>
 
-                    <h1 data-animate="fade-up" class="mt-6 text-4xl font-black leading-tight tracking-tight text-[#0f172a] [text-shadow:0_2px_10px_rgba(0,0,0,0.1)] md:text-6xl">
+                    <h1 data-reveal style="transition-delay:0.4s" class="al-reveal mt-6 text-4xl font-black leading-tight tracking-tight text-[#0f172a] md:text-6xl">
                         Construye con
                         <span class="text-orange-600">calidad</span>
                         lo que tu proyecto exige
                     </h1>
 
-                    <p data-animate="fade-up" class="mt-5 text-base font-medium leading-relaxed text-gray-900 [text-shadow:0_2px_10px_rgba(0,0,0,0.1)] md:text-lg">
+                    <p data-reveal style="transition-delay:0.6s" class="al-reveal mt-5 text-base font-medium leading-relaxed text-[#111827] md:text-lg">
                         Tecnología alemana y calidad industrial al servicio de la obra en Campeche. Productos de alto rendimiento para resultados que duran.
                     </p>
 
-                    <div data-animate="fade-up" class="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                         <a
                             href="#productos"
+                            data-reveal
+                            style="transition-delay:0.8s"
                             data-icon-shift
-                            class="inline-flex w-fit items-center justify-center gap-2 rounded-2xl border border-[#E98332] bg-white px-6 py-3 text-sm font-bold text-[#E98332] shadow-sm hover:bg-orange-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#E98332]/40 [text-shadow:0_2px_10px_rgba(0,0,0,0.1)]"
+                            class="al-reveal inline-flex w-fit items-center justify-center gap-2 rounded-2xl border border-[#E98332] bg-white px-6 py-3 text-sm font-bold text-[#E98332] shadow-sm hover:bg-orange-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#E98332]/40"
                         >
                             <i class="fa-solid fa-layer-group al-icon al-icon-right"></i>
                             Ver productos
@@ -301,23 +303,6 @@
                     </div>
                 </div>
 
-                @php
-                    $quoteBaseMessage = trim((string) ($siteSettings?->whatsapp_message ?? ''));
-                    $quoteWhatsappLinks = collect($siteSettings?->contactPhones ?? [])
-                        ->map(function ($phone) {
-                            $url = trim((string) ($phone->whatsapp_url ?? ''));
-                            if ($url !== '') {
-                                return $url;
-                            }
-
-                            $digits = preg_replace('/\D+/', '', trim((string) ($phone->phone ?? '')));
-                            return $digits !== '' ? 'https://wa.me/'.$digits : '';
-                        })
-                        ->filter()
-                        ->unique()
-                        ->values()
-                        ->all();
-                @endphp
                 <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-stagger="0.1">
                     @forelse ($products as $product)
                         @php
@@ -352,16 +337,6 @@
                             }
 
                             $datasheetPath = trim((string) ($product->datasheet_path ?? ''));
-                        @endphp
-                        @php
-                            $quoteHref = '';
-                            if (! empty($quoteWhatsappLinks)) {
-                                $quoteHref = $quoteWhatsappLinks[array_rand($quoteWhatsappLinks)];
-                                $quoteText = trim($quoteBaseMessage);
-                                $quoteText = $quoteText !== '' ? $quoteText.' ' : '';
-                                $quoteText .= 'Cotización: '.trim((string) $product->title);
-                                $quoteHref .= (str_contains($quoteHref, '?') ? '&' : '?').'text='.rawurlencode($quoteText);
-                            }
                         @endphp
                         <article data-stagger-item class="group flex min-h-[400px] flex-col overflow-hidden rounded-3xl border border-black/10 bg-white shadow-sm transition-all duration-[400ms] ease-out transform-gpu hover:-translate-y-2 hover:shadow-xl">
                             <div class="relative h-48 overflow-hidden border border-gray-100 border-x-0 border-t-0">
@@ -400,19 +375,7 @@
                                     </tbody>
                                 </table>
 
-                                <div class="mt-6 grid gap-3 sm:grid-cols-4">
-                                    @if ($quoteHref !== '')
-                                        <a
-                                            href="{{ $quoteHref }}"
-                                            target="_blank"
-                                            rel="noopener"
-                                            data-icon-shift
-                                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#008D62] px-4 py-2 text-sm font-semibold text-white transition-all duration-[400ms] ease-out transform-gpu hover:bg-[#007A55] group-hover:-translate-y-1 group-hover:bg-[#007A55]"
-                                        >
-                                            Solicitar cotización
-                                            <i class="fa-solid fa-arrow-right al-icon al-icon-right"></i>
-                                        </a>
-                                    @endif
+                                <div class="mt-6 flex flex-wrap gap-3">
                                     @if ($datasheetPath !== '')
                                         <a href="{{ asset($datasheetPath) }}" target="_blank" rel="noopener" data-icon-shift class="inline-flex items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition-colors duration-[400ms] ease-out hover:bg-slate-50">
                                             <i class="fa-solid fa-file-pdf text-[#E98332] al-icon al-icon-up"></i>
@@ -600,7 +563,7 @@
                     </div>
 
                     <div class="md:col-span-7 max-md:mt-2 md:border-l md:border-black/10 md:pl-10">
-                        <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Directorio</h3>
+                        <h3 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">Directorio</h3>
                         <p class="mt-3 text-sm text-zinc-600">Datos de contacto.</p>
 
                         <div class="mt-8 space-y-6 text-zinc-700">

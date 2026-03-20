@@ -82,6 +82,10 @@
         will-change: opacity, transform;
     }
 
+    .al-reveal-left {
+        transform: translate3d(-20px, 0, 0);
+    }
+
     .al-reveal.is-revealed {
         opacity: 1;
         transform: translate3d(0, 0, 0);
