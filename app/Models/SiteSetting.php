@@ -13,6 +13,11 @@ class SiteSetting extends Model
         'map_embed_url',
         'whatsapp_number',
         'whatsapp_message',
+        'whatsapp_floating_enabled',
+    ];
+
+    protected $casts = [
+        'whatsapp_floating_enabled' => 'bool',
     ];
 
     public function contactEmails(): HasMany

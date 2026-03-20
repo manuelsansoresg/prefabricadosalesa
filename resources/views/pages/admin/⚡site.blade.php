@@ -25,8 +25,7 @@ new #[Title('Sitio')] class extends Component {
     public string $newPhone = '';
     public string $newWhatsappUrl = '';
 
-    public string $whatsappNumber = '';
-    public string $whatsappMessage = '';
+    public bool $whatsappFloatingEnabled = true;
 
     public $heroImage = null;
     public ?string $currentHeroImagePath = null;
@@ -43,8 +42,7 @@ new #[Title('Sitio')] class extends Component {
         $this->currentHeroImagePath = $heroMediaPath !== '' && ! preg_match('/\.(mp4|webm)$/i', $heroMediaPath) ? $heroMediaPath : null;
         $this->contactAddress = (string) ($settings->contact_address ?? '');
         $this->mapEmbedUrl = (string) ($settings->map_embed_url ?? '');
-        $this->whatsappNumber = (string) ($settings->whatsapp_number ?? '');
-        $this->whatsappMessage = (string) ($settings->whatsapp_message ?? '');
+        $this->whatsappFloatingEnabled = (bool) ($settings->whatsapp_floating_enabled ?? true);
 
         $this->emails = $settings->contactEmails()
             ->get()
@@ -89,8 +87,7 @@ new #[Title('Sitio')] class extends Component {
             'heroImage' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'contactAddress' => ['nullable', 'string', 'max:2000'],
             'mapEmbedUrl' => ['nullable', 'string', 'max:2000'],
-            'whatsappNumber' => ['nullable', 'string', 'max:30'],
-            'whatsappMessage' => ['nullable', 'string', 'max:500'],
+            'whatsappFloatingEnabled' => ['boolean'],
 
             'emails' => ['array'],
             'emails.*.id' => ['required', 'integer'],
@@ -134,8 +131,7 @@ new #[Title('Sitio')] class extends Component {
                 $update = [
                 'contact_address' => $address,
                 'map_embed_url' => $mapEmbedUrl,
-                'whatsapp_number' => trim($this->whatsappNumber),
-                'whatsapp_message' => trim($this->whatsappMessage),
+                'whatsapp_floating_enabled' => (bool) $this->whatsappFloatingEnabled,
                 ];
 
                 if ($newHeroPath) {
@@ -456,27 +452,22 @@ new #[Title('Sitio')] class extends Component {
 
                 <div class="rounded-3xl border border-gray-100 bg-white p-8 shadow-lg">
                     <div class="text-lg font-bold text-zinc-900">Botón flotante de WhatsApp</div>
-                    <div class="mt-1 text-xs font-mono text-zinc-500">Configura el número y el mensaje prellenado del botón.</div>
+                    <div class="mt-1 text-xs font-mono text-zinc-500">Activa o desactiva el botón flotante. El número se elige de forma aleatoria de los teléfonos que tengan WhatsApp configurado.</div>
 
-                    <div class="mt-6 grid gap-4 lg:grid-cols-2">
-                        <div class="space-y-2">
-                            <label class="text-sm text-zinc-700" for="whatsappNumber">Número (con lada)</label>
+                    <div class="mt-6 flex items-center justify-between gap-6 rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                        <div>
+                            <div class="text-sm font-bold text-zinc-900">Mostrar botón flotante</div>
+                            <div class="mt-1 text-xs font-mono text-zinc-500">Se mostrará en el sitio público.</div>
+                        </div>
+                        <label class="inline-flex cursor-pointer items-center gap-3">
                             <input
-                                id="whatsappNumber"
-                                type="text"
-                                wire:model="whatsappNumber"
-                                class="w-full cursor-text rounded-lg border border-gray-100 bg-white p-3 font-mono text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E98332]/60 focus:outline-hidden"
+                                id="whatsappFloatingEnabled"
+                                type="checkbox"
+                                wire:model="whatsappFloatingEnabled"
+                                class="size-5 rounded border-gray-300 text-[#008D62] focus:ring-[#008D62]/40"
                             />
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm text-zinc-700" for="whatsappMessage">Mensaje</label>
-                            <textarea
-                                id="whatsappMessage"
-                                rows="3"
-                                wire:model="whatsappMessage"
-                                class="w-full cursor-text rounded-lg border border-gray-100 bg-white p-3 font-mono text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E98332]/60 focus:outline-hidden"
-                            ></textarea>
-                        </div>
+                            <span class="text-sm font-bold text-zinc-900">Activar</span>
+                        </label>
                     </div>
                 </div>
             </div>

@@ -101,11 +101,11 @@
                     </a>
 
                     <div class="hidden items-center gap-8 text-[13px] leading-none font-medium tracking-wide uppercase text-[#1A1A1A] md:flex">
-                        <a href="#inicio" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Inicio</a>
-                        <a href="#nosotros" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Nosotros</a>
-                        <a href="#productos" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Productos</a>
-                        <a href="#galeria" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Galería</a>
-                        <a href="#contacto" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Contacto</a>
+                        <a href="#inicio" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Inicio</a>
+                        <a href="#nosotros" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Nosotros</a>
+                        <a href="#productos" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Productos</a>
+                        <a href="#galeria" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Galería</a>
+                        <a href="#contacto" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Contacto</a>
                     </div>
 
                     <div class="flex items-center gap-3">
@@ -134,11 +134,11 @@
                     @click.outside="mobileMenuOpen = false"
                 >
                     <div class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl flex-col gap-3 py-4 text-[13px] leading-none font-medium tracking-wide uppercase text-[#1A1A1A]">
-                        <a href="#inicio" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Inicio</a>
-                        <a href="#nosotros" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Nosotros</a>
-                        <a href="#productos" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Productos</a>
-                        <a href="#galeria" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Galería</a>
-                        <a href="#contacto" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Contacto</a>
+                        <a href="#inicio" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Inicio</a>
+                        <a href="#nosotros" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Nosotros</a>
+                        <a href="#productos" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Productos</a>
+                        <a href="#galeria" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Galería</a>
+                        <a href="#contacto" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Contacto</a>
                     </div>
                 </div>
             </nav>
@@ -154,32 +154,34 @@
                 <img
                     src="{{ asset($heroSrc) }}"
                     alt="Prefabricados Alesa"
-                    class="h-full w-full object-cover opacity-90"
+                    class="h-full w-full object-cover"
                     loading="eager"
                 />
-                <div class="absolute inset-0 bg-linear-to-b from-[#1A1A1A]/50 via-[#1A1A1A]/50 to-[#1A1A1A]"></div>
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(233,131,50,0.25),transparent_40%),radial-gradient(circle_at_80%_35%,rgba(0,141,98,0.25),transparent_45%)]"></div>
             </div>
 
-            <div class="relative mx-auto flex w-[min(1100px,calc(100%-2rem))] flex-col justify-end pb-18 pt-28 md:pb-20 md:pt-36">
-                <div class="max-w-2xl">
-                    <p data-animate="fade-up" class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-white/80">
-                        <span class="inline-block size-2 rounded-full bg-[#008D62]"></span>
+            <div class="relative flex min-h-[75svh] flex-col justify-center p-10 sm:min-h-[100svh] sm:p-16">
+                <div class="w-full max-w-2xl md:max-w-[45%] lg:max-w-[40%]">
+                    <p data-animate="fade-up" class="inline-flex w-fit items-center gap-2 rounded-full bg-[#008D62] px-4 py-2 text-xs font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.1)]">
+                        <span class="inline-block size-2 rounded-full bg-white/90"></span>
                         Materiales de construcción y renta de maquinaria
                     </p>
 
-                    <h1 data-animate="fade-up" class="mt-6 text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-                        Construye con 
-                        <span class="text-[#E98332]">calidad</span>
+                    <h1 data-animate="fade-up" class="mt-6 text-4xl font-black leading-tight tracking-tight text-[#0f172a] [text-shadow:0_2px_10px_rgba(0,0,0,0.1)] md:text-6xl">
+                        Construye con
+                        <span class="text-orange-600">calidad</span>
                         lo que tu proyecto exige
                     </h1>
 
-                    <p data-animate="fade-up" class="mt-5 text-base leading-relaxed text-white/75 md:text-lg">
+                    <p data-animate="fade-up" class="mt-5 text-base font-medium leading-relaxed text-gray-900 [text-shadow:0_2px_10px_rgba(0,0,0,0.1)] md:text-lg">
                         Tecnología alemana y calidad industrial al servicio de la obra en Campeche. Productos de alto rendimiento para resultados que duran.
                     </p>
 
                     <div data-animate="fade-up" class="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <a href="#productos" data-icon-shift class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#E98332] px-6 py-3 text-sm font-semibold text-white hover:bg-[#E98332]/90">
+                        <a
+                            href="#productos"
+                            data-icon-shift
+                            class="inline-flex w-fit items-center justify-center gap-2 rounded-2xl border border-[#E98332] bg-white px-6 py-3 text-sm font-bold text-[#E98332] shadow-sm hover:bg-orange-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#E98332]/40 [text-shadow:0_2px_10px_rgba(0,0,0,0.1)]"
+                        >
                             <i class="fa-solid fa-layer-group al-icon al-icon-right"></i>
                             Ver productos
                         </a>
@@ -210,7 +212,7 @@
                     </div>
                     <div class="order-1 md:order-2 md:col-span-6">
                         <div class="max-w-2xl">
-                            <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
+                            <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">
                                 {{ $about?->headline ?? 'Empresa 100% campechana con tecnología alemana' }}
                             </h2>
 
@@ -292,7 +294,7 @@
 
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Catálogo</h2>
+                        <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">Catálogo</h2>
                         <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
                             Fabricamos materiales con estándares de ingeniería para mantener una calidad optima. 
                         </p>
@@ -300,8 +302,21 @@
                 </div>
 
                 @php
-                    $quoteWhatsappDigits = preg_replace('/\D+/', '', trim((string) ($siteSettings?->whatsapp_number ?? '')));
                     $quoteBaseMessage = trim((string) ($siteSettings?->whatsapp_message ?? ''));
+                    $quoteWhatsappLinks = collect($siteSettings?->contactPhones ?? [])
+                        ->map(function ($phone) {
+                            $url = trim((string) ($phone->whatsapp_url ?? ''));
+                            if ($url !== '') {
+                                return $url;
+                            }
+
+                            $digits = preg_replace('/\D+/', '', trim((string) ($phone->phone ?? '')));
+                            return $digits !== '' ? 'https://wa.me/'.$digits : '';
+                        })
+                        ->filter()
+                        ->unique()
+                        ->values()
+                        ->all();
                 @endphp
                 <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-stagger="0.1">
                     @forelse ($products as $product)
@@ -340,12 +355,12 @@
                         @endphp
                         @php
                             $quoteHref = '';
-                            if ($quoteWhatsappDigits !== '') {
-                                $quoteHref = 'https://wa.me/'.$quoteWhatsappDigits;
+                            if (! empty($quoteWhatsappLinks)) {
+                                $quoteHref = $quoteWhatsappLinks[array_rand($quoteWhatsappLinks)];
                                 $quoteText = trim($quoteBaseMessage);
                                 $quoteText = $quoteText !== '' ? $quoteText.' ' : '';
                                 $quoteText .= 'Cotización: '.trim((string) $product->title);
-                                $quoteHref .= '?text='.rawurlencode($quoteText);
+                                $quoteHref .= (str_contains($quoteHref, '?') ? '&' : '?').'text='.rawurlencode($quoteText);
                             }
                         @endphp
                         <article data-stagger-item class="group flex min-h-[400px] flex-col overflow-hidden rounded-3xl border border-black/10 bg-white shadow-sm transition-all duration-[400ms] ease-out transform-gpu hover:-translate-y-2 hover:shadow-xl">
@@ -428,7 +443,7 @@
                 </div>
 
                 <div>
-                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Calidad en cada Proyecto</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">Calidad en cada Proyecto</h2>
                     <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
                        
                     </p>
@@ -459,7 +474,7 @@
             </div>
         </section>
 
-        <section id="productos" class="bg-zinc-50">
+        <section id="contacto" class="bg-zinc-50">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28" data-reveal>
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
@@ -560,7 +575,7 @@
 
                 <div class="mt-10 grid gap-10 md:grid-cols-12 md:gap-12">
                     <div class="md:col-span-5">
-                        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Hablemos de tu proyecto</h2>
+                        <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">Hablemos de tu proyecto</h2>
                         <p class="mt-4 text-sm text-zinc-600 md:text-base">
                             Ubicación: {{ trim((string) ($siteSettings?->contact_address ?? '')) !== '' ? $siteSettings->contact_address : 'Libramiento carretera de Campeche a Uayamón KM. 2.6' }}
                         </p>
@@ -626,34 +641,44 @@
             <div class="mx-auto flex w-[min(1100px,calc(100%-2rem))] flex-col gap-4 text-sm font-light text-zinc-600 md:flex-row md:items-center md:justify-between">
                 <p>© {{ now()->year }} Prefabricados Alesa</p>
                 <div class="flex items-center gap-4">
-                    <a href="#inicio" class="hover:text-black">Inicio</a>
-                    <a href="#contacto" class="hover:text-black">Contacto</a>
+                    <a href="#inicio" class="transition-colors duration-200 hover:text-[#008D62]">Inicio</a>
+                    <a href="#contacto" class="transition-colors duration-200 hover:text-[#008D62]">Contacto</a>
                 </div>
             </div>
         </footer>
 
         @php
-            $whatsappNumber = trim((string) ($siteSettings?->whatsapp_number ?? ''));
-            $whatsappMessage = trim((string) ($siteSettings?->whatsapp_message ?? ''));
-            $whatsappDigits = preg_replace('/\D+/', '', $whatsappNumber);
-            $whatsappHref = '';
+            $whatsappFloatingEnabled = (bool) ($siteSettings?->whatsapp_floating_enabled ?? true);
+            $whatsappLinks = collect($siteSettings?->contactPhones ?? [])
+                ->map(function ($phone) {
+                    $url = trim((string) ($phone->whatsapp_url ?? ''));
+                    if ($url !== '') {
+                        return $url;
+                    }
 
-            if ($whatsappDigits !== '') {
-                $whatsappHref = 'https://wa.me/'.$whatsappDigits;
-                if ($whatsappMessage !== '') {
-                    $whatsappHref .= '?text='.rawurlencode($whatsappMessage);
-                }
-            }
+                    $digits = preg_replace('/\D+/', '', trim((string) ($phone->phone ?? '')));
+                    return $digits !== '' ? 'https://wa.me/'.$digits : '';
+                })
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
         @endphp
 
-        @if ($whatsappHref !== '')
+        @if ($whatsappFloatingEnabled && count($whatsappLinks) > 0)
             <a
-                href="{{ $whatsappHref }}"
+                href="{{ $whatsappLinks[0] }}"
                 target="_blank"
                 rel="noopener"
                 data-icon-shift
                 class="fixed bottom-6 right-6 z-[55] grid size-14 place-items-center rounded-full bg-[#008D62] text-white shadow-lg shadow-black/20 hover:bg-[#008D62]/90"
                 aria-label="Abrir WhatsApp"
+                x-data="{ links: @js($whatsappLinks) }"
+                @click.prevent="
+                    if (!links || links.length === 0) return;
+                    const idx = Math.floor(Math.random() * links.length);
+                    window.open(links[idx], '_blank', 'noopener');
+                "
             >
                 <i class="fa-brands fa-whatsapp text-2xl al-icon al-icon-up"></i>
             </a>
