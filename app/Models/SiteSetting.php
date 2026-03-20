@@ -9,6 +9,8 @@ class SiteSetting extends Model
 {
     protected $fillable = [
         'hero_video_path',
+        'contact_address',
+        'map_embed_url',
         'whatsapp_number',
         'whatsapp_message',
     ];

@@ -6,9 +6,10 @@
     {{ filled($title ?? null) ? $title.' - '.config('app.name', 'Laravel') : config('app.name', 'Laravel') }}
 </title>
 
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('image/logo_sm.png') }}?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('image/logo_sm.png') }}?v=1">
+<link rel="shortcut icon" type="image/png" href="{{ asset('image/logo_sm.png') }}?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('image/logo_sm.png') }}?v=1">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +18,16 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer" />
 
 <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+
+@php
+    $googleMapsKey = (string) (config('services.google_maps.key') ?? '');
+    if ($googleMapsKey === '') {
+        $googleMapsKey = (string) (env('GOOGLE_MAPS_API_KEY') ?: '');
+    }
+@endphp
+@if ((request()->routeIs('admin.site') || request()->is('welcome')) && filled($googleMapsKey))
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ urlencode($googleMapsKey) }}&libraries=places&v=weekly&language=es&region=MX" async defer></script>
+@endif
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @livewireStyles

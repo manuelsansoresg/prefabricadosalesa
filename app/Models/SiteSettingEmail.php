@@ -11,6 +11,7 @@ class SiteSettingEmail extends Model
 
     protected $fillable = [
         'site_setting_id',
+        'label',
         'email',
         'sort_order',
     ];

@@ -147,105 +147,115 @@ new #[Title('Galería')] class extends Component {
     }
 }; ?>
 
-<div class="flex flex-col gap-6">
-    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div>
-            <flux:heading>Galería</flux:heading>
-            <flux:subheading>Sube imágenes (jpg, png, webp) para la sección Galería.</flux:subheading>
-        </div>
-        <flux:button variant="primary" type="button" wire:click="$set('showUploader', true)">Subir imágenes</flux:button>
-    </div>
-
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        @forelse ($this->images as $img)
-            <div class="group relative overflow-hidden rounded-xl border border-neutral-200 bg-white">
-                <div class="relative aspect-square overflow-hidden bg-zinc-100">
-                    <img src="{{ asset($img->thumb_path ?: $img->image_path) }}" alt="Galería" class="h-full w-full object-cover" />
-                </div>
-                <div class="absolute inset-x-0 bottom-0 flex justify-end gap-2 bg-linear-to-t from-black/70 via-black/0 to-black/0 p-3 opacity-0 transition group-hover:opacity-100">
-                    <flux:button variant="danger" size="sm" type="button" wire:click="delete({{ $img->id }})">Eliminar</flux:button>
-                </div>
-            </div>
-        @empty
-            <div class="rounded-xl border border-neutral-200 bg-white p-8 text-center sm:col-span-2 lg:col-span-3 xl:col-span-4">
-                <flux:text>No hay imágenes todavía.</flux:text>
-            </div>
-        @endforelse
-    </div>
-
-    <flux:modal name="gallery-uploader" wire:model="showUploader" focusable class="max-w-xl">
-        <form wire:submit.prevent="saveUploads" class="space-y-6">
+<div class="min-h-screen bg-[#F8F9FA] px-4 py-8">
+    <div class="mx-auto flex w-full max-w-6xl flex-col gap-8">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-                <flux:heading size="lg">Subir imágenes</flux:heading>
-                <flux:subheading>Solo archivos de imagen (jpg, png, webp).</flux:subheading>
+                <div class="text-lg font-bold text-zinc-900">Galería</div>
+                <div class="mt-1 text-xs font-mono text-zinc-500">Sube imágenes (jpg, png, webp) para la sección Galería.</div>
             </div>
+            <button type="button" wire:click="$set('showUploader', true)" class="inline-flex h-11 items-center justify-center rounded-full bg-[#008D62] px-6 text-sm font-bold text-white shadow-sm hover:bg-[#007A55]">
+                Subir imágenes
+            </button>
+        </div>
 
-            <div class="grid gap-3">
-                @if ($errors->has('uploads') || $errors->has('uploads.*'))
-                    <flux:callout variant="danger" icon="x-circle" heading="No se pudo subir">
-                        <div class="space-y-1">
-                            @foreach ($errors->get('uploads') as $message)
-                                <div>{{ $message }}</div>
-                            @endforeach
-                            @foreach ($errors->get('uploads.*') as $messages)
-                                @foreach ($messages as $message)
-                                    <div>{{ $message }}</div>
-                                @endforeach
-                            @endforeach
-                        </div>
-                    </flux:callout>
-                @endif
-
-                <div
-                    class="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-4 text-sm text-zinc-600"
-                    x-data="{ dragging: false }"
-                    @dragover.prevent="dragging = true"
-                    @dragleave.prevent="dragging = false"
-                    @drop.prevent="
-                        dragging = false;
-                        const files = Array.from($event.dataTransfer?.files || []);
-                        if (files.length > 0) {
-                            $wire.uploadMultiple('uploads', files);
-                        }
-                    "
-                    :class="dragging ? 'ring-2 ring-[color:var(--color-accent)]' : ''"
-                >
-                    <input x-ref="fileInput" type="file" class="hidden" wire:model="uploads" multiple accept="image/jpeg,image/png,image/webp" />
-
-                    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <span>Arrastra y suelta o selecciona archivos.</span>
-                        </div>
-                        <button type="button" class="rounded-lg bg-white px-3 py-2 font-medium text-zinc-900 shadow-sm hover:bg-zinc-50" @click="$refs.fileInput.click()">
-                            Elegir imágenes
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            @forelse ($this->images as $img)
+                <div class="group relative overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-lg">
+                    <div class="relative aspect-square overflow-hidden bg-gray-50">
+                        <img src="{{ asset($img->thumb_path ?: $img->image_path) }}" alt="Galería" class="h-full w-full object-cover" />
+                    </div>
+                    <div class="absolute inset-x-0 bottom-0 flex justify-end bg-linear-to-t from-black/70 via-black/0 to-black/0 p-3 opacity-0 transition group-hover:opacity-100">
+                        <button type="button" wire:click="delete({{ $img->id }})" class="inline-flex items-center justify-center rounded-full bg-white/90 p-2 text-red-600 shadow-sm hover:bg-red-50" aria-label="Eliminar">
+                            <flux:icon.trash variant="outline" class="size-5" />
                         </button>
                     </div>
                 </div>
+            @empty
+                <div class="rounded-3xl border border-gray-100 bg-white p-10 text-center shadow-lg sm:col-span-2 lg:col-span-3 xl:col-span-4">
+                    <div class="text-xs font-mono text-zinc-500">No hay imágenes todavía.</div>
+                </div>
+            @endforelse
+        </div>
 
-                @if (count($uploads) > 0)
-                    <div class="rounded-xl border border-zinc-200 bg-white p-3 text-sm text-zinc-700" wire:loading wire:target="uploads">
-                        Preparando archivos…
-                    </div>
+        <flux:modal name="gallery-uploader" wire:model="showUploader" focusable class="max-w-xl">
+            <form wire:submit.prevent="saveUploads" class="space-y-6">
+                <div>
+                    <div class="text-lg font-bold text-zinc-900">Subir imágenes</div>
+                    <div class="mt-1 text-xs font-mono text-zinc-500">Solo archivos de imagen (jpg, png, webp).</div>
+                </div>
 
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        @foreach (array_slice($uploads, 0, 4) as $img)
-                            <img src="{{ $img->temporaryUrl() }}" alt="Vista previa" class="h-44 w-full rounded-xl object-cover" />
-                        @endforeach
-                    </div>
-
-                    @if (count($uploads) > 4)
-                        <flux:text class="text-sm text-zinc-600">+{{ count($uploads) - 4 }} más seleccionadas</flux:text>
+                <div class="grid gap-4">
+                    @if ($errors->has('uploads') || $errors->has('uploads.*'))
+                        <flux:callout variant="danger" icon="x-circle" heading="No se pudo subir">
+                            <div class="space-y-1">
+                                @foreach ($errors->get('uploads') as $message)
+                                    <div>{{ $message }}</div>
+                                @endforeach
+                                @foreach ($errors->get('uploads.*') as $messages)
+                                    @foreach ($messages as $message)
+                                        <div>{{ $message }}</div>
+                                    @endforeach
+                                @endforeach
+                            </div>
+                        </flux:callout>
                     @endif
-                @endif
-            </div>
 
-            <div class="flex justify-end gap-2">
-                <flux:modal.close>
-                    <flux:button variant="filled" type="button" wire:click="$set('showUploader', false)">Cancelar</flux:button>
-                </flux:modal.close>
-                <flux:button variant="primary" type="submit" wire:loading.attr="disabled" wire:target="saveUploads,uploads">Subir</flux:button>
-            </div>
-        </form>
-    </flux:modal>
+                    <div
+                        class="flex h-40 flex-col justify-center rounded-2xl border border-dashed border-gray-200 bg-white px-6 text-xs font-mono text-zinc-500 shadow-sm"
+                        x-data="{ dragging: false }"
+                        x-on:dragover.prevent="dragging = true"
+                        x-on:dragleave.prevent="dragging = false"
+                        x-on:drop.prevent="
+                            dragging = false;
+                            const files = Array.from($event.dataTransfer?.files || []);
+                            if (files.length > 0) {
+                                $wire.uploadMultiple('uploads', files);
+                            }
+                        "
+                        :class="dragging ? 'ring-2 ring-[#E98332]/40' : ''"
+                    >
+                        <input x-ref="fileInput" type="file" class="hidden" wire:model="uploads" multiple accept="image/jpeg,image/png,image/webp" />
+
+                        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div class="flex items-center gap-3">
+                                <flux:icon.arrow-up-tray variant="outline" class="size-6 text-[#E98332]" />
+                                <span>Arrastra y suelta o selecciona archivos.</span>
+                            </div>
+                            <button type="button" class="inline-flex h-11 items-center justify-center rounded-full border border-[#E98332] bg-white px-5 text-sm font-bold text-[#E98332] shadow-sm hover:bg-orange-50" x-on:click="$refs.fileInput.click()">
+                                Elegir imágenes
+                            </button>
+                        </div>
+                    </div>
+
+                    @if (count($uploads) > 0)
+                        <div class="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-xs font-mono text-zinc-600" wire:loading wire:target="uploads">
+                            Preparando archivos…
+                        </div>
+
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            @foreach (array_slice($uploads, 0, 4) as $img)
+                                <img src="{{ $img->temporaryUrl() }}" alt="Vista previa" class="h-44 w-full rounded-2xl border border-gray-100 object-cover" />
+                            @endforeach
+                        </div>
+
+                        @if (count($uploads) > 4)
+                            <div class="text-xs font-mono text-zinc-500">+{{ count($uploads) - 4 }} más seleccionadas</div>
+                        @endif
+                    @endif
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <flux:modal.close>
+                        <button type="button" wire:click="$set('showUploader', false)" class="inline-flex h-11 items-center justify-center rounded-full border border-gray-200 bg-white px-6 text-sm font-bold text-zinc-700 shadow-sm hover:bg-zinc-50">
+                            Cancelar
+                        </button>
+                    </flux:modal.close>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="saveUploads,uploads" class="inline-flex h-11 items-center justify-center rounded-full bg-[#008D62] px-6 text-sm font-bold text-white shadow-sm hover:bg-[#007A55]">
+                        Subir
+                    </button>
+                </div>
+            </form>
+        </flux:modal>
+    </div>
 </div>

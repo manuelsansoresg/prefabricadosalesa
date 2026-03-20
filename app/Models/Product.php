@@ -9,8 +9,15 @@ class Product extends Model
 {
     protected $fillable = [
         'title',
+        'unit',
         'description',
+        'tech_specs',
         'image_path',
+        'datasheet_path',
+    ];
+
+    protected $casts = [
+        'tech_specs' => 'array',
     ];
 
     public function images(): HasMany

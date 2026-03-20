@@ -21,7 +21,7 @@
                 </a>
                 <a href="{{ route('admin.site') }}" wire:navigate class="rounded-2xl border border-zinc-200 bg-white p-5 hover:bg-zinc-50">
                     <flux:heading size="sm">Sitio</flux:heading>
-                    <flux:text class="mt-1 text-sm text-zinc-600">Video del hero y datos de contacto.</flux:text>
+                    <flux:text class="mt-1 text-sm text-zinc-600">Imagen del hero y datos de contacto.</flux:text>
                 </a>
             </div>
         @endif

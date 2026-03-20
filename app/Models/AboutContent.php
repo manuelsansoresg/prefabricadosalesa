@@ -11,6 +11,7 @@ class AboutContent extends Model
         'headline',
         'image_path',
         'mission',
+        'vision',
         'history',
         'card_1_title',
         'card_1_body',

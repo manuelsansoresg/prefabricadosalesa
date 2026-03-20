@@ -8,46 +8,104 @@
         x-data="{
             lightboxOpen: false,
             lightboxSrc: null,
-            heroMuted: true,
+            lightboxItems: [],
+            lightboxIndex: 0,
+            lightboxFading: false,
+            galleryItems: @js($galleryImages->map(fn ($image) => asset($image->image_path))->values()),
             mobileMenuOpen: false,
-            openLightbox(src) { this.lightboxSrc = src; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; },
-            closeLightbox() { this.lightboxOpen = false; this.lightboxSrc = null; document.body.style.overflow = ''; },
-            toggleHeroMute() {
-                const el = this.$refs.heroVideo;
-                if (!el) return;
-                el.muted = !el.muted;
-                this.heroMuted = el.muted;
+            get lightboxCurrentSrc() { return this.lightboxItems.length ? this.lightboxItems[this.lightboxIndex] : this.lightboxSrc; },
+            init() {
+                this.onScroll();
+                window.addEventListener('scroll', this.onScroll.bind(this), { passive: true });
+            },
+            onScroll() {
+                const scrolled = window.scrollY > 12;
+
+                if (this.$refs.headerNav) {
+                    this.$refs.headerNav.classList.toggle('shadow-sm', scrolled);
+                }
+
+                if (this.$refs.headerInner) {
+                    this.$refs.headerInner.classList.toggle('py-2', scrolled);
+                    this.$refs.headerInner.classList.toggle('py-4', !scrolled);
+                }
+
+                if (this.$refs.headerLogo) {
+                    this.$refs.headerLogo.classList.toggle('!h-10', scrolled);
+                    this.$refs.headerLogo.classList.toggle('md:!h-12', scrolled);
+                    this.$refs.headerLogo.classList.toggle('!h-12', !scrolled);
+                    this.$refs.headerLogo.classList.toggle('md:!h-14', !scrolled);
+                }
+            },
+            openLightbox(src) {
+                this.lightboxItems = [];
+                this.lightboxIndex = 0;
+                this.lightboxSrc = src;
+                this.lightboxOpen = true;
+                document.body.style.overflow = 'hidden';
+            },
+            openGallery(index) {
+                this.lightboxItems = this.galleryItems;
+                this.lightboxIndex = index;
+                this.lightboxSrc = null;
+                this.lightboxOpen = true;
+                document.body.style.overflow = 'hidden';
+                this.prefetchNext();
+            },
+            closeLightbox() {
+                this.lightboxOpen = false;
+                this.lightboxSrc = null;
+                this.lightboxItems = [];
+                this.lightboxIndex = 0;
+                document.body.style.overflow = '';
+            },
+            nextLightbox() {
+                if (this.lightboxItems.length < 2) return;
+                this.lightboxFading = true;
+                setTimeout(() => {
+                    this.lightboxIndex = (this.lightboxIndex + 1) % this.lightboxItems.length;
+                    this.prefetchNext();
+                    requestAnimationFrame(() => (this.lightboxFading = false));
+                }, 140);
+            },
+            prevLightbox() {
+                if (this.lightboxItems.length < 2) return;
+                this.lightboxFading = true;
+                setTimeout(() => {
+                    this.lightboxIndex = (this.lightboxIndex - 1 + this.lightboxItems.length) % this.lightboxItems.length;
+                    this.prefetchNext();
+                    requestAnimationFrame(() => (this.lightboxFading = false));
+                }, 140);
+            },
+            prefetchNext() {
+                if (this.lightboxItems.length < 2) return;
+                const nextIndex = (this.lightboxIndex + 1) % this.lightboxItems.length;
+                const img = new Image();
+                img.src = this.lightboxItems[nextIndex];
             },
         }"
-        x-init="
-            if ($refs.heroVideo) {
-                $refs.heroVideo.muted = true;
-                heroMuted = true;
-            }
-
-            if (window.gsap) {
-                gsap.from('[data-animate=\"fade-up\"]', { y: 18, opacity: 0, duration: 0.9, stagger: 0.08, ease: 'power2.out' });
-            }
-        "
         @keydown.escape.window="closeLightbox(); mobileMenuOpen = false"
+        @keydown.arrow-right.window="lightboxOpen && lightboxItems.length > 1 && nextLightbox()"
+        @keydown.arrow-left.window="lightboxOpen && lightboxItems.length > 1 && prevLightbox()"
     >
         <header class="fixed inset-x-0 top-0 z-50">
-            <nav class="w-full bg-white">
-                <div class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center justify-between py-4">
+            <nav x-ref="headerNav" class="w-full bg-white transition-all duration-300 ease-out">
+                <div x-ref="headerInner" class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center justify-between py-4 transition-all duration-300 ease-out">
                     <a href="#inicio" class="flex items-center gap-3">
                         <img
                             src="{{ asset('image/logo_transparente.png') }}"
                             alt="Prefabricados Alesa"
-                            class="!h-12 !w-auto object-contain md:!h-14"
+                            x-ref="headerLogo"
+                            class="!h-12 !w-auto object-contain transition-all duration-300 ease-out md:!h-14"
                         />
                     </a>
 
-                    <div class="hidden items-center gap-8 text-sm font-medium tracking-wide text-[#1A1A1A] md:flex">
-                        <a href="#inicio" class="transition-colors hover:text-[#E98332]">Inicio</a>
-                        <a href="#nosotros" class="transition-colors hover:text-[#E98332]">Nosotros</a>
-                        <a href="#productos" class="transition-colors hover:text-[#E98332]">Productos</a>
-                        <a href="#galeria" class="transition-colors hover:text-[#E98332]">Galería</a>
-                        <a href="#contacto" class="transition-colors hover:text-[#E98332]">Contacto</a>
+                    <div class="hidden items-center gap-8 text-[13px] leading-none font-medium tracking-wide uppercase text-[#1A1A1A] md:flex">
+                        <a href="#inicio" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Inicio</a>
+                        <a href="#nosotros" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Nosotros</a>
+                        <a href="#productos" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Productos</a>
+                        <a href="#galeria" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Galería</a>
+                        <a href="#contacto" class="relative pb-1 after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Contacto</a>
                     </div>
 
                     <div class="flex items-center gap-3">
@@ -75,12 +133,12 @@
                     x-transition
                     @click.outside="mobileMenuOpen = false"
                 >
-                    <div class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl flex-col gap-3 py-4 text-sm font-medium tracking-wide text-[#1A1A1A]">
-                        <a href="#inicio" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Inicio</a>
-                        <a href="#nosotros" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Nosotros</a>
-                        <a href="#productos" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Productos</a>
-                        <a href="#galeria" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Galería</a>
-                        <a href="#contacto" class="py-2 hover:text-[#E98332]" @click="mobileMenuOpen = false">Contacto</a>
+                    <div class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl flex-col gap-3 py-4 text-[13px] leading-none font-medium tracking-wide uppercase text-[#1A1A1A]">
+                        <a href="#inicio" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Inicio</a>
+                        <a href="#nosotros" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Nosotros</a>
+                        <a href="#productos" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Productos</a>
+                        <a href="#galeria" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Galería</a>
+                        <a href="#contacto" class="relative inline-flex py-2 pb-3 after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Contacto</a>
                     </div>
                 </div>
             </nav>
@@ -88,17 +146,17 @@
 
         <section id="inicio" class="relative min-h-[75svh] overflow-hidden sm:min-h-[100svh]">
             <div class="absolute inset-0">
-                <video
-                    x-ref="heroVideo"
+                @php
+                    $heroMediaPath = (string) ($siteSettings?->hero_video_path ?? '');
+                    $heroIsImage = $heroMediaPath !== '' && ! preg_match('/\.(mp4|webm)$/i', $heroMediaPath);
+                    $heroSrc = $heroIsImage ? $heroMediaPath : 'image/empresa.jpg';
+                @endphp
+                <img
+                    src="{{ asset($heroSrc) }}"
+                    alt="Prefabricados Alesa"
                     class="h-full w-full object-cover opacity-90"
-                    preload="metadata"
-                    playsinline
-                    muted
-                    autoplay
-                    loop
-                >
-                    <source src="{{ asset($siteSettings?->hero_video_path ?: 'videos/hero.mp4') }}" type="video/mp4" />
-                </video>
+                    loading="eager"
+                />
                 <div class="absolute inset-0 bg-linear-to-b from-[#1A1A1A]/50 via-[#1A1A1A]/50 to-[#1A1A1A]"></div>
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(233,131,50,0.25),transparent_40%),radial-gradient(circle_at_80%_35%,rgba(0,141,98,0.25),transparent_45%)]"></div>
             </div>
@@ -121,26 +179,18 @@
                     </p>
 
                     <div data-animate="fade-up" class="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <a href="#productos" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#E98332] px-6 py-3 text-sm font-semibold text-white hover:bg-[#E98332]/90">
-                            <i class="fa-solid fa-layer-group"></i>
+                        <a href="#productos" data-icon-shift class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#E98332] px-6 py-3 text-sm font-semibold text-white hover:bg-[#E98332]/90">
+                            <i class="fa-solid fa-layer-group al-icon al-icon-right"></i>
                             Ver productos
                         </a>
                     </div>
                 </div>
             </div>
 
-            <button
-                type="button"
-                class="absolute bottom-6 left-6 z-10 grid size-12 place-items-center rounded-2xl border border-white/10 bg-white/5 text-white backdrop-blur-xl hover:bg-white/10"
-                @click="toggleHeroMute()"
-                aria-label="Mutear o desmutear video"
-            >
-                <i class="fa-solid" :class="heroMuted ? 'fa-volume-xmark' : 'fa-volume-high'"></i>
-            </button>
         </section>
 
         <section id="nosotros" class="relative">
-            <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
+            <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28" data-reveal>
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
                     <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
@@ -169,6 +219,13 @@
                                     <p class="text-sm font-extrabold tracking-widest text-slate-900 uppercase">Misión</p>
                                     <p class="mt-3 text-sm leading-relaxed text-zinc-600 md:text-base">
                                         {{ $about?->mission ?? 'Fabricar productos de calidad, en cantidades suficientes y a precios justos; contribuyendo así, al desarrollo de la región.' }}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-extrabold tracking-widest text-slate-900 uppercase">Visión</p>
+                                    <p class="mt-3 text-sm leading-relaxed text-zinc-600 md:text-base">
+                                        {{ $about?->vision ?? 'Ser la opción más confiable en prefabricados en Campeche, con procesos industriales y tecnología de punta, garantizando calidad constante y entregas oportunas.' }}
                                     </p>
                                 </div>
 
@@ -222,7 +279,7 @@
             </div>
         </section>
 
-        <section id="productos" class="bg-zinc-50">
+        <section id="productos" class="bg-[#F9FAFB]">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
@@ -237,26 +294,117 @@
                     <div>
                         <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Catálogo</h2>
                         <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
-                            Grid dinámico con detalles. Pasa el cursor para ver el efecto.
+                            Fabricamos materiales con estándares de ingeniería para mantener una calidad optima. 
                         </p>
                     </div>
                 </div>
 
-                <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                @php
+                    $quoteWhatsappDigits = preg_replace('/\D+/', '', trim((string) ($siteSettings?->whatsapp_number ?? '')));
+                    $quoteBaseMessage = trim((string) ($siteSettings?->whatsapp_message ?? ''));
+                @endphp
+                <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-stagger="0.1">
                     @forelse ($products as $product)
-                        <article class="group overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
-                            <div class="relative aspect-[16/11] overflow-hidden">
-                                <img
-                                    src="{{ asset($product->image_path) }}"
-                                    alt="{{ $product->title }}"
-                                    class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
-                                    loading="lazy"
-                                />
-                                <div class="absolute inset-0 bg-linear-to-t from-black/55 via-transparent to-transparent opacity-90"></div>
+                        @php
+                            $description = trim((string) $product->description);
+                            $rawTechSpecs = is_array($product->tech_specs) ? $product->tech_specs : [];
+                            $specs = collect($rawTechSpecs)
+                                ->map(fn ($row) => [trim((string) ($row['label'] ?? '')), trim((string) ($row['value'] ?? ''))])
+                                ->filter(fn ($row) => filled($row[0]) && filled($row[1]))
+                                ->values();
+
+                            if ($specs->isEmpty()) {
+                                $lines = collect(preg_split("/\\r\\n|\\n|\\r/", $description))->map(fn ($line) => trim($line))->filter();
+                                $specs = $lines->map(function ($line) {
+                                    $delimiter = str_contains($line, '|') ? '|' : (str_contains($line, ':') ? ':' : null);
+                                    if (! $delimiter) {
+                                        return ['Detalle', $line];
+                                    }
+
+                                    [$label, $value] = array_pad(explode($delimiter, $line, 2), 2, '');
+
+                                    return [trim($label), trim($value)];
+                                })->filter(fn ($row) => filled($row[0]) && filled($row[1]))->values();
+
+                                if ($specs->isEmpty() && filled($description)) {
+                                    $specs = collect([['Descripción', $description]]);
+                                }
+                            }
+
+                            $unit = trim((string) ($product->unit ?? ''));
+                            if ($unit !== '') {
+                                $specs = collect([['Unidad', $unit]])->concat($specs)->values();
+                            }
+
+                            $datasheetPath = trim((string) ($product->datasheet_path ?? ''));
+                        @endphp
+                        @php
+                            $quoteHref = '';
+                            if ($quoteWhatsappDigits !== '') {
+                                $quoteHref = 'https://wa.me/'.$quoteWhatsappDigits;
+                                $quoteText = trim($quoteBaseMessage);
+                                $quoteText = $quoteText !== '' ? $quoteText.' ' : '';
+                                $quoteText .= 'Cotización: '.trim((string) $product->title);
+                                $quoteHref .= '?text='.rawurlencode($quoteText);
+                            }
+                        @endphp
+                        <article data-stagger-item class="group flex min-h-[400px] flex-col overflow-hidden rounded-3xl border border-black/10 bg-white shadow-sm transition-all duration-[400ms] ease-out transform-gpu hover:-translate-y-2 hover:shadow-xl">
+                            <div class="relative h-48 overflow-hidden border border-gray-100 border-x-0 border-t-0">
+                                <button
+                                    type="button"
+                                    class="block h-full w-full cursor-zoom-in"
+                                    aria-label="Ver imagen de {{ $product->title }}"
+                                    @click="openLightbox('{{ asset($product->image_path) }}')"
+                                >
+                                    <span class="pointer-events-none absolute inset-0 bg-orange-500/10 opacity-0 transition-opacity duration-[400ms] ease-out group-hover:opacity-100"></span>
+                                    <img
+                                        src="{{ asset($product->image_path) }}"
+                                        alt="{{ $product->title }}"
+                                        class="h-48 w-full object-cover transition-transform duration-[400ms] ease-out group-hover:scale-105"
+                                        loading="lazy"
+                                    />
+                                </button>
                             </div>
-                            <div class="p-6">
-                                <h3 class="text-base font-semibold">{{ $product->title }}</h3>
-                                <p class="mt-2 text-sm text-zinc-600">{{ $product->description }}</p>
+                            <div class="flex flex-1 flex-col p-6">
+                                <p class="font-mono text-xs font-bold tracking-widest text-[#E98332] uppercase">ESPECIFICACIÓN</p>
+                                <h3 class="mt-2 text-2xl font-extrabold text-[#1A1A1A]">{{ $product->title }}</h3>
+
+                                <table class="mt-4 w-full font-mono text-[13px] text-zinc-700">
+                                    <tbody>
+                                        @forelse ($specs as $specRow)
+                                            <tr class="border-b border-zinc-100 last:border-b-0">
+                                                <td class="py-1 pr-4 text-zinc-600">{{ $specRow[0] }}</td>
+                                                <td class="py-1 text-zinc-900 font-semibold js-countup" data-countup-auto>{{ $specRow[1] }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td class="py-1 pr-4 text-zinc-600">Especificación</td>
+                                                <td class="py-1 text-zinc-800 font-semibold">—</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+
+                                <div class="mt-6 grid gap-3 sm:grid-cols-4">
+                                    @if ($quoteHref !== '')
+                                        <a
+                                            href="{{ $quoteHref }}"
+                                            target="_blank"
+                                            rel="noopener"
+                                            data-icon-shift
+                                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#008D62] px-4 py-2 text-sm font-semibold text-white transition-all duration-[400ms] ease-out transform-gpu hover:bg-[#007A55] group-hover:-translate-y-1 group-hover:bg-[#007A55]"
+                                        >
+                                            Solicitar cotización
+                                            <i class="fa-solid fa-arrow-right al-icon al-icon-right"></i>
+                                        </a>
+                                    @endif
+                                    @if ($datasheetPath !== '')
+                                        <a href="{{ asset($datasheetPath) }}" target="_blank" rel="noopener" data-icon-shift class="inline-flex items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition-colors duration-[400ms] ease-out hover:bg-slate-50">
+                                            <i class="fa-solid fa-file-pdf text-[#E98332] al-icon al-icon-up"></i>
+                                            Ficha técnica
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </article>
                     @empty
@@ -269,7 +417,7 @@
         </section>
 
         <section id="galeria">
-            <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
+            <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28" data-reveal>
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
                     <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
@@ -280,29 +428,30 @@
                 </div>
 
                 <div>
-                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Obra y producción</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Calidad en cada Proyecto</h2>
                     <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
-                        Layout tipo masonry con lightbox.
+                       
                     </p>
                 </div>
 
-                <div class="mt-10 columns-2 gap-4 space-y-4 sm:columns-3">
+                <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-stagger="0.1">
                     @forelse ($galleryImages as $image)
                         <button
                             type="button"
-                            class="group relative block w-full overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm"
-                            @click="openLightbox('{{ asset($image->image_path) }}')"
+                            data-stagger-item
+                            class="group relative aspect-[4/3] w-full cursor-zoom-in overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm"
+                            @click="openGallery({{ $loop->index }})"
                         >
                             <img
                                 src="{{ asset($image->thumb_path ?: $image->image_path) }}"
                                 alt="Galería"
-                                class="h-auto w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                                class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                                 loading="lazy"
                             />
                             <span class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/35 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></span>
                         </button>
                     @empty
-                        <div class="rounded-2xl border border-black/10 bg-white p-8 text-center shadow-sm">
+                        <div class="col-span-full rounded-2xl border border-black/10 bg-white p-8 text-center shadow-sm">
                             <p class="text-sm text-zinc-600">Aún no hay imágenes en la galería. Entra al panel para subirlas.</p>
                         </div>
                     @endforelse
@@ -310,8 +459,8 @@
             </div>
         </section>
 
-        <section id="contacto" class="bg-zinc-50">
-            <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
+        <section id="productos" class="bg-zinc-50">
+            <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28" data-reveal>
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
                     <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
@@ -322,13 +471,89 @@
                 </div>
 
                 <div class="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
-                    <iframe
-                        title="Mapa Prefabricados Alesa"
-                        class="h-[480px] w-full md:h-[560px]"
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        src="https://www.google.com/maps?q=Libramiento%20carretera%20de%20Campeche%20a%20Uayam%C3%B3n%20KM.%202.6&output=embed"
-                    ></iframe>
+                    @php
+                        $rawMapUrl = trim((string) ($siteSettings?->map_embed_url ?? ''));
+
+                        $address = trim((string) ($siteSettings?->contact_address ?? ''));
+                        $address = $address !== '' ? $address : 'Libramiento carretera de Campeche a Uayamón KM. 2.6';
+                        $encodedAddress = rawurlencode($address);
+
+                        $fallbackMapUrl = "https://www.google.com/maps?q=Prefabricados%20Alesa%2C%20S.A.%20de%20C.V.%20{$encodedAddress}&output=embed&z=17";
+
+                        if ($rawMapUrl === '') {
+                            $mapUrl = $fallbackMapUrl;
+                        } elseif (str_contains($rawMapUrl, '/maps/embed') || str_contains($rawMapUrl, 'output=embed')) {
+                            $mapUrl = $rawMapUrl;
+                        } else {
+                            $mapUrl = $fallbackMapUrl;
+                        }
+
+                        $mapLat = null;
+                        $mapLng = null;
+
+                        if ($rawMapUrl !== '') {
+                            $parts = parse_url($rawMapUrl);
+                            $query = [];
+                            parse_str((string) ($parts['query'] ?? ''), $query);
+                            $q = (string) ($query['q'] ?? '');
+
+                            if (preg_match('/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/', $q, $m)) {
+                                $mapLat = (float) $m[1];
+                                $mapLng = (float) $m[2];
+                            }
+                        }
+                    @endphp
+                    @if (is_float($mapLat) && is_float($mapLng))
+                        <div
+                            id="alexaMap"
+                            class="h-[480px] w-full md:h-[560px]"
+                            data-lat="{{ $mapLat }}"
+                            data-lng="{{ $mapLng }}"
+                        ></div>
+                        <script>
+                            (function () {
+                                const mapEl = document.getElementById('alexaMap');
+                                if (!mapEl || mapEl.dataset.ready === '1') return;
+                                mapEl.dataset.ready = '1';
+
+                                const lat = parseFloat(mapEl.dataset.lat || '');
+                                const lng = parseFloat(mapEl.dataset.lng || '');
+
+                                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+                                function init() {
+                                    if (!window.google || !window.google.maps) {
+                                        setTimeout(init, 200);
+                                        return;
+                                    }
+
+                                    const center = { lat: lat, lng: lng };
+                                    const map = new window.google.maps.Map(mapEl, {
+                                        center: center,
+                                        zoom: 16,
+                                        streetViewControl: false,
+                                        mapTypeControl: false,
+                                        fullscreenControl: true,
+                                    });
+
+                                    new window.google.maps.Marker({
+                                        position: center,
+                                        map: map,
+                                    });
+                                }
+
+                                init();
+                            })();
+                        </script>
+                    @else
+                        <iframe
+                            title="Mapa Prefabricados Alesa"
+                            class="h-[480px] w-full md:h-[560px]"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            src="{{ $mapUrl }}"
+                        ></iframe>
+                    @endif
                 </div>
 
                 <div class="mt-10 h-px w-full bg-slate-200/80"></div>
@@ -337,58 +562,13 @@
                     <div class="md:col-span-5">
                         <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">Hablemos de tu proyecto</h2>
                         <p class="mt-4 text-sm text-zinc-600 md:text-base">
-                            Ubicación: Libramiento carretera de Campeche a Uayamón KM. 2.6
+                            Ubicación: {{ trim((string) ($siteSettings?->contact_address ?? '')) !== '' ? $siteSettings->contact_address : 'Libramiento carretera de Campeche a Uayamón KM. 2.6' }}
                         </p>
 
                         @php
                             $contactEmails = $siteSettings?->contactEmails ?? collect();
                             $contactPhones = $siteSettings?->contactPhones ?? collect();
                         @endphp
-
-                        @if ($contactEmails->isNotEmpty() || $contactPhones->isNotEmpty())
-                            <div class="mt-6 grid gap-4 rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
-                                @if ($contactEmails->isNotEmpty())
-                                    <div>
-                                        <p class="text-xs font-mono font-bold tracking-widest text-[#E98332] uppercase">Correos</p>
-                                        <div class="mt-3 grid gap-2 text-sm text-zinc-700">
-                                            @foreach ($contactEmails as $email)
-                                                <a class="inline-flex items-center gap-2 hover:text-[#008D62]" href="mailto:{{ $email->email }}">
-                                                    <i class="fa-solid fa-envelope"></i>
-                                                    <span>{{ $email->email }}</span>
-                                                </a>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-
-                                @if ($contactPhones->isNotEmpty())
-                                    <div>
-                                        <p class="text-xs font-mono font-bold tracking-widest text-[#008D62] uppercase">Teléfonos</p>
-                                        <div class="mt-3 grid gap-2 text-sm text-zinc-700">
-                                            @foreach ($contactPhones as $phone)
-                                                @php
-                                                    $phoneTrimmed = trim((string) $phone->phone);
-                                                    $tel = preg_replace('/\s+/', '', $phoneTrimmed);
-                                                    $whatsappUrl = trim((string) ($phone->whatsapp_url ?? ''));
-                                                @endphp
-                                                <div class="flex flex-wrap items-center gap-3">
-                                                    <a class="inline-flex items-center gap-2 hover:text-[#008D62]" href="tel:{{ $tel }}">
-                                                        <i class="fa-solid fa-phone"></i>
-                                                        <span>{{ $phoneTrimmed }}</span>
-                                                    </a>
-                                                    @if ($whatsappUrl !== '')
-                                                        <a class="inline-flex items-center gap-2 text-[#008D62] hover:underline" href="{{ $whatsappUrl }}" target="_blank" rel="noopener">
-                                                            <i class="fa-brands fa-whatsapp"></i>
-                                                            <span>WhatsApp</span>
-                                                        </a>
-                                                    @endif
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
 
                         <form class="mt-8 space-y-4">
                             <div class="grid gap-4 sm:grid-cols-2">
@@ -406,36 +586,36 @@
 
                     <div class="md:col-span-7 max-md:mt-2 md:border-l md:border-black/10 md:pl-10">
                         <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Directorio</h3>
-                        <p class="mt-3 text-sm text-zinc-600">Datos demo (se puede conectar a configuración después).</p>
+                        <p class="mt-3 text-sm text-zinc-600">Datos de contacto.</p>
 
-                        <div class="mt-8 grid gap-7 text-zinc-700">
-                            <div>
-                                <p class="text-xs font-mono font-bold tracking-widest text-[#E98332] uppercase">Director General</p>
-                                <p class="mt-2 text-lg font-semibold text-slate-900">Arq. Alejandro Berrón De la Peña</p>
-                                <p class="mt-1 text-sm text-zinc-600">aberron@prefabricadosalesa.com</p>
-                                <p class="mt-1 text-sm text-zinc-600">+52 981 000 0000</p>
-                            </div>
+                        <div class="mt-8 space-y-6 text-zinc-700">
+                            @if ($contactEmails->isNotEmpty())
+                                @foreach ($contactEmails as $email)
+                                    @php
+                                        $label = trim((string) ($email->label ?? ''));
+                                        $label = $label !== '' ? $label : 'Correo';
+                                    @endphp
+                                    <div>
+                                        <p class="text-xs font-bold tracking-widest text-[#E98332] uppercase">{{ $label }}</p>
+                                        <a class="mt-1 inline-flex font-mono text-sm text-zinc-900 transition-colors duration-200 ease-out hover:text-[#008D62]" href="mailto:{{ $email->email }}">
+                                            {{ $email->email }}
+                                        </a>
+                                    </div>
+                                @endforeach
+                            @endif
 
-                            <div>
-                                <p class="text-xs font-mono font-bold tracking-widest text-[#008D62] uppercase">Gerente</p>
-                                <p class="mt-2 text-lg font-semibold text-slate-900">L.I. Jorge L. Farfán Zapata</p>
-                                <p class="mt-1 text-sm text-zinc-600">jfarfan@prefabricadosalesa.com</p>
-                                <p class="mt-1 text-sm text-zinc-600">+52 981 000 0001</p>
-                            </div>
-
-                            <div>
-                                <p class="text-xs font-mono font-bold tracking-widest text-[#E98332] uppercase">Contabilidad</p>
-                                <p class="mt-2 text-lg font-semibold text-slate-900">C.P. Juan Carlos Alatorre Manjarrez</p>
-                                <p class="mt-1 text-sm text-zinc-600">jalatorre@prefabricadosalesa.com</p>
-                                <p class="mt-1 text-sm text-zinc-600">+52 981 000 0002</p>
-                            </div>
-
-                            <div>
-                                <p class="text-xs font-mono font-bold tracking-widest text-[#008D62] uppercase">Atención a clientes</p>
-                                <p class="mt-2 text-lg font-semibold text-slate-900">Reyna Castro Vázquez</p>
-                                <p class="mt-1 text-sm text-zinc-600">rcastro@prefabricadosalesa.com</p>
-                                <p class="mt-1 text-sm text-zinc-600">+52 981 000 0003</p>
-                            </div>
+                            @if ($contactPhones->isNotEmpty())
+                                <div>
+                                    <p class="text-xs font-bold tracking-widest text-[#E98332] uppercase">TELÉFONOS</p>
+                                    @foreach ($contactPhones as $phone)
+                                        @php
+                                            $phoneTrimmed = trim((string) $phone->phone);
+                                            $tel = preg_replace('/\s+/', '', $phoneTrimmed);
+                                        @endphp
+                                        <a class="mt-1 block font-mono text-sm text-zinc-900 transition-colors duration-200 ease-out hover:text-[#008D62]" href="tel:{{ $tel }}">{{ $phoneTrimmed }}</a>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -471,24 +651,69 @@
                 href="{{ $whatsappHref }}"
                 target="_blank"
                 rel="noopener"
+                data-icon-shift
                 class="fixed bottom-6 right-6 z-[55] grid size-14 place-items-center rounded-full bg-[#008D62] text-white shadow-lg shadow-black/20 hover:bg-[#008D62]/90"
                 aria-label="Abrir WhatsApp"
             >
-                <i class="fa-brands fa-whatsapp text-2xl"></i>
+                <i class="fa-brands fa-whatsapp text-2xl al-icon al-icon-up"></i>
             </a>
         @endif
 
         <div
-            class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4"
+            class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
             x-show="lightboxOpen"
             x-transition.opacity
             @click.self="closeLightbox()"
         >
-            <div class="relative w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-white">
+            <div class="relative w-full max-w-5xl">
+                <div
+                    class="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-white group"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                >
                 <button type="button" class="absolute right-3 top-3 z-10 grid size-10 place-items-center rounded-xl bg-black/60 text-white hover:bg-black/70" @click="closeLightbox()">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-                <img :src="lightboxSrc" alt="Imagen" class="max-h-[80svh] w-full object-contain" />
+
+                    <div class="relative">
+                        <img
+                            :src="lightboxCurrentSrc"
+                            alt="Imagen"
+                            class="max-h-[85vh] w-full object-contain transition-opacity duration-300 ease-out"
+                            :class="lightboxFading ? 'opacity-0' : 'opacity-100'"
+                        />
+
+                        <button
+                            type="button"
+                            data-icon-shift
+                            class="absolute left-3 top-1/2 z-10 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-gray-100/50 text-white opacity-0 backdrop-blur-sm transition-opacity duration-200 hover:bg-gray-100/70 group-hover:opacity-100"
+                            x-show="lightboxItems.length > 1"
+                            @click="prevLightbox()"
+                            aria-label="Imagen anterior"
+                        >
+                            <i class="fa-solid fa-chevron-left al-icon al-icon-left"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            data-icon-shift
+                            class="absolute right-3 top-1/2 z-10 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-gray-100/50 text-white opacity-0 backdrop-blur-sm transition-opacity duration-200 hover:bg-gray-100/70 group-hover:opacity-100"
+                            x-show="lightboxItems.length > 1"
+                            @click="nextLightbox()"
+                            aria-label="Imagen siguiente"
+                        >
+                            <i class="fa-solid fa-chevron-right al-icon al-icon-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex justify-center px-6 pb-5 pt-3" x-show="lightboxItems.length > 1">
+                        <p class="font-mono text-xs font-bold tracking-widest text-[#E98332]" x-text="(lightboxIndex + 1) + ' de ' + lightboxItems.length"></p>
+                    </div>
+                </div>
             </div>
         </div>
 
