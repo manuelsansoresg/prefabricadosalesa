@@ -8,6 +8,7 @@ function easeOutCubic(t) {
 
 function initRevealAnimations() {
     const reduced = prefersReducedMotion();
+    const isSmallScreen = () => window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
 
     const explicitReveal = Array.from(document.querySelectorAll('[data-reveal]'));
     explicitReveal.forEach((el) => el.classList.add('al-reveal'));
@@ -21,6 +22,22 @@ function initRevealAnimations() {
             item.style.transitionDelay = `${Math.max(0, index) * Math.max(0, stepSeconds)}s`;
         });
     });
+
+    // En pantallas pequeñas, revelar inmediatamente los ítems de Productos y Galería
+    if (isSmallScreen()) {
+        const fastSelectors = [
+            '#productos [data-stagger-item]',
+            '#galeria [data-stagger-item]',
+            '#productos .al-reveal',
+            '#galeria .al-reveal',
+        ].join(', ');
+        const fastItems = Array.from(document.querySelectorAll(fastSelectors));
+        fastItems.forEach((el) => {
+            el.classList.add('is-revealed');
+            el.style.transitionDelay = '0s';
+            el.style.transitionDuration = '120ms';
+        });
+    }
 
     const revealEls = Array.from(document.querySelectorAll('.al-reveal'));
 
