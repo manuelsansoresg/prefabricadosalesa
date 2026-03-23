@@ -89,14 +89,14 @@
         @keydown.arrow-left.window="lightboxOpen && lightboxItems.length > 1 && prevLightbox()"
     >
         <header class="fixed inset-x-0 top-0 z-50">
-            <nav x-ref="headerNav" class="w-full bg-white transition-all duration-300 ease-out">
-                <div x-ref="headerInner" class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center justify-between py-4 transition-all duration-300 ease-out">
+            <nav x-ref="headerNav" class="w-full bg-white/90 backdrop-blur-sm transition-all duration-300 ease-out">
+                <div x-ref="headerInner" class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center justify-between py-3 transition-all duration-300 ease-out md:py-4">
                     <a href="#inicio" class="flex items-center gap-3">
                         <img
                             src="{{ asset('image/logo_transparente.png') }}"
                             alt="Prefabricados Alesa"
                             x-ref="headerLogo"
-                            class="!h-12 !w-auto object-contain transition-all duration-300 ease-out md:!h-14"
+                            class="!h-10 !w-auto object-contain transition-all duration-300 ease-out md:!h-14"
                         />
                     </a>
 
@@ -128,7 +128,7 @@
 
                 <div
                     id="mobile-menu"
-                    class="border-t border-black/10 bg-white md:hidden"
+                        class="border-t border-black/10 bg-white/95 backdrop-blur-sm md:hidden"
                     x-show="mobileMenuOpen"
                     x-transition
                     @click.outside="mobileMenuOpen = false"
@@ -159,9 +159,9 @@
                 />
             </div>
 
-            <div class="relative flex min-h-[75svh] flex-col justify-center p-10 sm:min-h-[100svh] sm:p-16">
+            <div class="relative flex min-h-[75svh] flex-col justify-center px-6 pb-10 pt-28 sm:min-h-[100svh] sm:p-16">
                 <div class="w-full max-w-2xl rounded-3xl bg-white/55 p-6 backdrop-blur-sm md:max-w-[45%] lg:max-w-[40%]">
-                    <p data-reveal style="transition-delay:0.2s" class="al-reveal al-reveal-left inline-flex w-fit items-center gap-2 rounded-full bg-[#008D62] px-4 py-2 text-xs font-bold text-white">
+                    <p data-reveal style="transition-delay:0.2s" class="al-reveal al-reveal-left mx-auto inline-flex w-fit items-center gap-2 rounded-full bg-[#008D62] px-4 py-2 text-center text-xs font-bold text-white sm:mx-0 sm:text-left">
                         <span class="inline-block size-2 rounded-full bg-white/90"></span>
                         Materiales de construcción y renta de maquinaria
                     </p>
@@ -176,7 +176,7 @@
                         Tecnología alemana y calidad industrial al servicio de la obra en Campeche. Productos de alto rendimiento para resultados que duran.
                     </p>
 
-                    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:items-start">
                         <a
                             href="#productos"
                             data-reveal
@@ -214,7 +214,7 @@
                     </div>
                     <div class="order-1 md:order-2 md:col-span-6">
                         <div class="max-w-2xl">
-                            <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">
+                            <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] text-center md:text-4xl md:text-left">
                                 {{ $about?->headline ?? 'Empresa 100% campechana con tecnología alemana' }}
                             </h2>
 
@@ -296,7 +296,7 @@
 
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">Catálogo</h2>
+                        <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] text-center md:text-4xl md:text-left">Catálogo</h2>
                         <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
                             Fabricamos materiales con estándares de ingeniería para mantener una calidad optima. 
                         </p>
@@ -406,7 +406,7 @@
                 </div>
 
                 <div>
-                    <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">Calidad en cada Proyecto</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] text-center md:text-4xl md:text-left">Calidad en cada Proyecto</h2>
                     <p class="mt-4 max-w-2xl text-sm text-zinc-600 md:text-base">
                        
                     </p>
@@ -538,7 +538,7 @@
 
                 <div class="mt-10 grid gap-10 md:grid-cols-12 md:gap-12">
                     <div class="md:col-span-5">
-                        <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">Hablemos de tu proyecto</h2>
+                        <h2 class="text-3xl font-extrabold tracking-tight text-[#008D62] text-center md:text-4xl md:text-left">Hablemos de tu proyecto</h2>
                         <p class="mt-4 text-sm text-zinc-600 md:text-base">
                             Ubicación: {{ trim((string) ($siteSettings?->contact_address ?? '')) !== '' ? $siteSettings->contact_address : 'Libramiento carretera de Campeche a Uayamón KM. 2.6' }}
                         </p>
@@ -563,7 +563,7 @@
                     </div>
 
                     <div class="md:col-span-7 max-md:mt-2 md:border-l md:border-black/10 md:pl-10">
-                        <h3 class="text-3xl font-extrabold tracking-tight text-[#008D62] md:text-4xl">Directorio</h3>
+                        <h3 class="text-3xl font-extrabold tracking-tight text-[#008D62] text-center md:text-4xl md:text-left">Directorio</h3>
                         <p class="mt-3 text-sm text-zinc-600">Datos de contacto.</p>
 
                         <div class="mt-8 space-y-6 text-zinc-700">
@@ -600,11 +600,13 @@
             </div>
         </section>
 
-        <footer class="border-t border-black/10 py-10">
-            <div class="mx-auto flex w-[min(1100px,calc(100%-2rem))] flex-col gap-4 text-sm font-light text-zinc-600 md:flex-row md:items-center md:justify-between">
-                <p>© {{ now()->year }} Prefabricados Alesa</p>
-                <div class="flex items-center gap-4">
+        <footer class="border-t border-black/10 bg-white py-12">
+            <div class="mx-auto flex w-[min(1100px,calc(100%-2rem))] flex-col items-center gap-5 text-sm text-zinc-600 md:flex-row md:justify-between">
+                <p class="text-center font-medium md:text-left">© {{ now()->year }} Prefabricados Alesa</p>
+                <div class="flex flex-wrap items-center justify-center gap-6 font-semibold md:justify-end">
                     <a href="#inicio" class="transition-colors duration-200 hover:text-[#008D62]">Inicio</a>
+                    <a href="#nosotros" class="transition-colors duration-200 hover:text-[#008D62]">Nosotros</a>
+                    <a href="#productos" class="transition-colors duration-200 hover:text-[#008D62]">Productos</a>
                     <a href="#contacto" class="transition-colors duration-200 hover:text-[#008D62]">Contacto</a>
                 </div>
             </div>
