@@ -11,7 +11,10 @@ new #[Title('Galería')] class extends Component {
     use WithFileUploads;
 
     public bool $showUploader = false;
+    public bool $showVideoUploader = false;
     public array $uploads = [];
+    public $video = null;
+    public $videoCover = null;
 
     private function createThumbnail(string $sourcePath, string $thumbTargetPath, int $maxSide = 700): bool
     {
@@ -116,6 +119,7 @@ new #[Title('Galería')] class extends Component {
             }
 
             GalleryImage::query()->create([
+                'media_type' => 'image',
                 'image_path' => 'image/gallery/'.$fileName,
                 'thumb_path' => $thumbPath,
             ]);
@@ -124,26 +128,183 @@ new #[Title('Galería')] class extends Component {
         $this->reset(['showUploader', 'uploads']);
     }
 
+    public function saveVideoUpload(): void
+    {
+        set_time_limit(300);
+
+        $validated = $this->validate([
+            'video' => ['required', 'file', 'mimetypes:video/mp4,video/webm', 'max:51200'],
+            'videoCover' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        $videoDirectory = public_path('videos/gallery');
+        File::ensureDirectoryExists($videoDirectory);
+
+        $coverDirectory = public_path('image/gallery/video-covers');
+        File::ensureDirectoryExists($coverDirectory);
+
+        $coverThumbDirectory = public_path('image/gallery/video-covers/thumbs');
+        File::ensureDirectoryExists($coverThumbDirectory);
+
+        $videoExtension = strtolower($validated['video']->getClientOriginalExtension() ?: 'mp4');
+        $videoFileName = now()->format('YmdHis').'-'.Str::random(12).'.'.$videoExtension;
+        $videoTarget = $videoDirectory.DIRECTORY_SEPARATOR.$videoFileName;
+
+        File::copy($validated['video']->getRealPath(), $videoTarget);
+
+        $coverExtension = strtolower($validated['videoCover']->getClientOriginalExtension() ?: 'jpg');
+        $coverFileName = now()->format('YmdHis').'-'.Str::random(12).'.'.$coverExtension;
+        $coverTarget = $coverDirectory.DIRECTORY_SEPARATOR.$coverFileName;
+
+        File::copy($validated['videoCover']->getRealPath(), $coverTarget);
+
+        $coverThumbExtension = function_exists('imagewebp') ? 'webp' : 'jpg';
+        $coverThumbFileName = pathinfo($coverFileName, PATHINFO_FILENAME).'-thumb.'.$coverThumbExtension;
+        $coverThumbTarget = $coverThumbDirectory.DIRECTORY_SEPARATOR.$coverThumbFileName;
+        $coverThumbPath = null;
+
+        try {
+            if ($this->createThumbnail($coverTarget, $coverThumbTarget)) {
+                $coverThumbPath = 'image/gallery/video-covers/thumbs/'.$coverThumbFileName;
+            }
+        } catch (Throwable) {
+            $coverThumbPath = null;
+        }
+
+        $coverPath = 'image/gallery/video-covers/'.$coverFileName;
+        $videoPath = 'videos/gallery/'.$videoFileName;
+
+        GalleryImage::query()->create([
+            'media_type' => 'video',
+            'image_path' => $coverPath,
+            'thumb_path' => $coverThumbPath,
+            'video_path' => $videoPath,
+            'video_cover_path' => $coverPath,
+            'video_cover_thumb_path' => $coverThumbPath,
+        ]);
+
+        $this->reset(['showVideoUploader', 'video', 'videoCover']);
+    }
+
     public function delete(int $id): void
     {
         $image = GalleryImage::query()->findOrFail($id);
-        $publicPath = $image->image_path;
-        $thumbPublicPath = $image->thumb_path;
+        $paths = [];
+
+        if (filled($image->image_path)) {
+            $paths[] = $image->image_path;
+        }
+
+        if (filled($image->thumb_path)) {
+            $paths[] = $image->thumb_path;
+        }
+
+        if (filled($image->video_path)) {
+            $paths[] = $image->video_path;
+        }
+
+        if (filled($image->video_cover_path)) {
+            $paths[] = $image->video_cover_path;
+        }
+
+        if (filled($image->video_cover_thumb_path)) {
+            $paths[] = $image->video_cover_thumb_path;
+        }
 
         $image->delete();
 
-        if (filled($publicPath)) {
-            File::delete(public_path($publicPath));
-        }
+        $paths = collect($paths)->map(fn ($p) => (string) $p)->filter()->unique()->values()->all();
 
-        if (filled($thumbPublicPath)) {
-            File::delete(public_path($thumbPublicPath));
+        foreach ($paths as $publicPath) {
+            File::delete(public_path($publicPath));
         }
     }
 
     public function getImagesProperty()
     {
-        return GalleryImage::query()->latest()->get();
+        $items = GalleryImage::query()->latest()->get();
+
+        $thumbExtension = function_exists('imagewebp') ? 'webp' : 'jpg';
+
+        $imageThumbDirectory = public_path('image/gallery/thumbs');
+        File::ensureDirectoryExists($imageThumbDirectory);
+
+        $coverThumbDirectory = public_path('image/gallery/video-covers/thumbs');
+        File::ensureDirectoryExists($coverThumbDirectory);
+
+        foreach ($items as $item) {
+            $type = (string) ($item->media_type ?? 'image');
+
+            if ($type === 'video') {
+                $coverPath = trim((string) ($item->video_cover_path ?? $item->image_path ?? ''));
+                $hasThumb = trim((string) ($item->video_cover_thumb_path ?? '')) !== '';
+
+                if ($coverPath === '' || $hasThumb) {
+                    continue;
+                }
+
+                $source = public_path($coverPath);
+
+                if (! File::exists($source)) {
+                    continue;
+                }
+
+                $thumbFileName = pathinfo($coverPath, PATHINFO_FILENAME).'-thumb.'.$thumbExtension;
+                $target = $coverThumbDirectory.DIRECTORY_SEPARATOR.$thumbFileName;
+                $publicThumbPath = 'image/gallery/video-covers/thumbs/'.$thumbFileName;
+
+                if (! File::exists($target)) {
+                    try {
+                        $this->createThumbnail($source, $target);
+                    } catch (Throwable) {
+                    }
+                }
+
+                if (File::exists($target)) {
+                    $item->forceFill([
+                        'video_cover_thumb_path' => $publicThumbPath,
+                        'thumb_path' => $publicThumbPath,
+                    ])->save();
+                    $item->video_cover_thumb_path = $publicThumbPath;
+                    $item->thumb_path = $publicThumbPath;
+                }
+
+                continue;
+            }
+
+            $imagePath = trim((string) ($item->image_path ?? ''));
+            $hasThumb = trim((string) ($item->thumb_path ?? '')) !== '';
+
+            if ($imagePath === '' || $hasThumb) {
+                continue;
+            }
+
+            $source = public_path($imagePath);
+
+            if (! File::exists($source)) {
+                continue;
+            }
+
+            $thumbFileName = pathinfo($imagePath, PATHINFO_FILENAME).'-thumb.'.$thumbExtension;
+            $target = $imageThumbDirectory.DIRECTORY_SEPARATOR.$thumbFileName;
+            $publicThumbPath = 'image/gallery/thumbs/'.$thumbFileName;
+
+            if (! File::exists($target)) {
+                try {
+                    $this->createThumbnail($source, $target);
+                } catch (Throwable) {
+                }
+            }
+
+            if (File::exists($target)) {
+                $item->forceFill([
+                    'thumb_path' => $publicThumbPath,
+                ])->save();
+                $item->thumb_path = $publicThumbPath;
+            }
+        }
+
+        return $items;
     }
 }; ?>
 
@@ -154,16 +315,28 @@ new #[Title('Galería')] class extends Component {
                 <div class="text-lg font-bold text-zinc-900">Galería</div>
                 <div class="mt-1 text-xs font-mono text-zinc-500">Sube imágenes (jpg, png, webp) para la sección Galería.</div>
             </div>
-            <button type="button" wire:click="$set('showUploader', true)" class="inline-flex h-11 items-center justify-center rounded-full bg-[#008D62] px-6 text-sm font-bold text-white shadow-sm hover:bg-[#007A55]">
-                Subir imágenes
-            </button>
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                <button type="button" wire:click="$set('showUploader', true)" class="inline-flex h-11 items-center justify-center rounded-full bg-[#008D62] px-6 text-sm font-bold text-white shadow-sm hover:bg-[#007A55]">
+                    Subir imágenes
+                </button>
+                <button type="button" wire:click="$set('showVideoUploader', true)" class="inline-flex h-11 items-center justify-center rounded-full border border-[#008D62] bg-white px-6 text-sm font-bold text-[#008D62] shadow-sm hover:bg-emerald-50">
+                    Subir video
+                </button>
+            </div>
         </div>
 
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             @forelse ($this->images as $img)
                 <div class="group relative overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-lg">
                     <div class="relative aspect-square overflow-hidden bg-gray-50">
-                        <img src="{{ asset($img->thumb_path ?: $img->image_path) }}" alt="Galería" class="h-full w-full object-cover" />
+                        <img src="{{ asset(($img->media_type ?? 'image') === 'video' ? ($img->video_cover_thumb_path ?: $img->video_cover_path ?: $img->thumb_path ?: $img->image_path) : ($img->thumb_path ?: $img->image_path)) }}" alt="Galería" class="h-full w-full object-cover" />
+                        @if (($img->media_type ?? 'image') === 'video')
+                            <div class="pointer-events-none absolute inset-0 grid place-items-center">
+                                <div class="grid size-12 place-items-center rounded-full bg-black/55 text-white">
+                                    <i class="fa-solid fa-play"></i>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                     <div class="absolute inset-x-0 bottom-0 flex justify-end bg-linear-to-t from-black/70 via-black/0 to-black/0 p-3 opacity-0 transition group-hover:opacity-100">
                         <button type="button" wire:click="delete({{ $img->id }})" class="inline-flex items-center justify-center rounded-full bg-white/90 p-2 text-red-600 shadow-sm hover:bg-red-50" aria-label="Eliminar">
@@ -252,6 +425,75 @@ new #[Title('Galería')] class extends Component {
                         </button>
                     </flux:modal.close>
                     <button type="submit" wire:loading.attr="disabled" wire:target="saveUploads,uploads" class="inline-flex h-11 items-center justify-center rounded-full bg-[#008D62] px-6 text-sm font-bold text-white shadow-sm hover:bg-[#007A55]">
+                        Subir
+                    </button>
+                </div>
+            </form>
+        </flux:modal>
+
+        <flux:modal name="gallery-video-uploader" wire:model="showVideoUploader" focusable class="max-w-xl">
+            <form wire:submit.prevent="saveVideoUpload" class="space-y-6" x-data>
+                <div>
+                    <div class="text-lg font-bold text-zinc-900">Subir video</div>
+                    <div class="mt-1 text-xs font-mono text-zinc-500">Adjunta el video (mp4, webm) y una portada (jpg, png, webp).</div>
+                </div>
+
+                <div class="grid gap-5">
+                    @if ($errors->has('video') || $errors->has('videoCover'))
+                        <flux:callout variant="danger" icon="x-circle" heading="No se pudo subir">
+                            <div class="space-y-1">
+                                @foreach ($errors->get('video') as $message)
+                                    <div>{{ $message }}</div>
+                                @endforeach
+                                @foreach ($errors->get('videoCover') as $message)
+                                    <div>{{ $message }}</div>
+                                @endforeach
+                            </div>
+                        </flux:callout>
+                    @endif
+
+                    <div class="grid gap-2">
+                        <div class="text-sm font-bold text-zinc-900">Video</div>
+                        <div class="text-xs font-mono text-zinc-500">Solo mp4 o webm.</div>
+                        <div class="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-5 text-xs font-mono text-zinc-500 shadow-sm">
+                            <input x-ref="videoInput" type="file" class="hidden" wire:model="video" accept="video/mp4,video/webm" />
+                            <div class="flex items-center gap-3">
+                                <flux:icon.arrow-up-tray variant="outline" class="size-6 text-[#E98332]" />
+                                <span>{{ $video ? 'Video seleccionado' : 'Selecciona un archivo de video.' }}</span>
+                            </div>
+                            <button type="button" class="inline-flex h-11 items-center justify-center rounded-full border border-[#E98332] bg-white px-5 text-sm font-bold text-[#E98332] shadow-sm hover:bg-orange-50" x-on:click="$refs.videoInput.click()">
+                                Elegir video
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-2">
+                        <div class="text-sm font-bold text-zinc-900">Portada</div>
+                        <div class="text-xs font-mono text-zinc-500">Se mostrará con el ícono de play en la galería.</div>
+                        <div class="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-5 text-xs font-mono text-zinc-500 shadow-sm">
+                            <input x-ref="coverInput" type="file" class="hidden" wire:model="videoCover" accept="image/jpeg,image/png,image/webp" />
+                            <div class="flex items-center gap-3">
+                                <flux:icon.arrow-up-tray variant="outline" class="size-6 text-[#E98332]" />
+                                <span>{{ $videoCover ? 'Portada seleccionada' : 'Selecciona una imagen de portada.' }}</span>
+                            </div>
+                            <button type="button" class="inline-flex h-11 items-center justify-center rounded-full border border-[#E98332] bg-white px-5 text-sm font-bold text-[#E98332] shadow-sm hover:bg-orange-50" x-on:click="$refs.coverInput.click()">
+                                Elegir portada
+                            </button>
+                        </div>
+
+                        @if ($videoCover)
+                            <img src="{{ $videoCover->temporaryUrl() }}" alt="Vista previa portada" class="h-44 w-full rounded-2xl border border-gray-100 object-cover" />
+                        @endif
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <flux:modal.close>
+                        <button type="button" wire:click="$set('showVideoUploader', false)" class="inline-flex h-11 items-center justify-center rounded-full border border-gray-200 bg-white px-6 text-sm font-bold text-zinc-700 shadow-sm hover:bg-zinc-50">
+                            Cancelar
+                        </button>
+                    </flux:modal.close>
+                    <button type="submit" wire:loading.attr="disabled" wire:target="saveVideoUpload,video,videoCover" class="inline-flex h-11 items-center justify-center rounded-full bg-[#008D62] px-6 text-sm font-bold text-white shadow-sm hover:bg-[#007A55]">
                         Subir
                     </button>
                 </div>

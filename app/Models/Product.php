@@ -13,6 +13,7 @@ class Product extends Model
         'description',
         'tech_specs',
         'image_path',
+        'thumb_path',
         'datasheet_path',
     ];
 

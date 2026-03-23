@@ -11,9 +11,32 @@
             lightboxItems: [],
             lightboxIndex: 0,
             lightboxFading: false,
-            galleryItems: @js($galleryImages->map(fn ($image) => asset($image->image_path))->values()),
+            videoOpen: false,
+            videoSrc: null,
+            videoPoster: null,
+            galleryItems: @js($galleryImages
+                ->map(function ($item) {
+                    $type = (string) ($item->media_type ?? 'image');
+                    $isVideo = $type === 'video';
+
+                    $thumbPath = $isVideo
+                        ? ((string) ($item->video_cover_thumb_path ?? '') !== '' ? $item->video_cover_thumb_path : ((string) ($item->video_cover_path ?? '') !== '' ? $item->video_cover_path : ($item->thumb_path ?: $item->image_path)))
+                        : ((string) ($item->thumb_path ?? '') !== '' ? $item->thumb_path : $item->image_path);
+
+                    return [
+                        'id' => $item->id,
+                        'type' => $type,
+                        'src' => asset($item->image_path),
+                        'thumb' => asset($thumbPath),
+                        'video' => filled($item->video_path) ? asset($item->video_path) : null,
+                        'poster' => asset($item->video_cover_path ?: $item->image_path),
+                        'posterThumb' => asset($item->video_cover_thumb_path ?: $thumbPath),
+                    ];
+                })
+                ->values()),
             mobileMenuOpen: false,
             get lightboxCurrentSrc() { return this.lightboxItems.length ? this.lightboxItems[this.lightboxIndex] : this.lightboxSrc; },
+            get galleryImageItems() { return (this.galleryItems || []).filter(i => i && i.type === 'image'); },
             init() {
                 this.onScroll();
                 window.addEventListener('scroll', this.onScroll.bind(this), { passive: true });
@@ -45,8 +68,19 @@
                 document.body.style.overflow = 'hidden';
             },
             openGallery(index) {
-                this.lightboxItems = this.galleryItems;
-                this.lightboxIndex = index;
+                const item = (this.galleryItems || [])[index];
+                if (!item) return;
+
+                if (item.type === 'video') {
+                    this.openVideo(item);
+                    return;
+                }
+
+                const images = this.galleryImageItems;
+                const imageIndex = images.findIndex(i => i.id === item.id);
+
+                this.lightboxItems = images.map(i => i.src);
+                this.lightboxIndex = Math.max(0, imageIndex);
                 this.lightboxSrc = null;
                 this.lightboxOpen = true;
                 document.body.style.overflow = 'hidden';
@@ -57,7 +91,30 @@
                 this.lightboxSrc = null;
                 this.lightboxItems = [];
                 this.lightboxIndex = 0;
-                document.body.style.overflow = '';
+                if (!this.videoOpen) {
+                    document.body.style.overflow = '';
+                }
+            },
+            openVideo(item) {
+                if (!item || !item.video) return;
+                this.videoSrc = item.video;
+                this.videoPoster = item.poster || null;
+                this.videoOpen = true;
+                document.body.style.overflow = 'hidden';
+            },
+            closeVideo() {
+                if (this.$refs.videoPlayer) {
+                    try {
+                        this.$refs.videoPlayer.pause();
+                        this.$refs.videoPlayer.currentTime = 0;
+                    } catch (_) {}
+                }
+                this.videoOpen = false;
+                this.videoSrc = null;
+                this.videoPoster = null;
+                if (!this.lightboxOpen) {
+                    document.body.style.overflow = '';
+                }
             },
             nextLightbox() {
                 if (this.lightboxItems.length < 2) return;
@@ -84,7 +141,7 @@
                 img.src = this.lightboxItems[nextIndex];
             },
         }"
-        @keydown.escape.window="closeLightbox(); mobileMenuOpen = false"
+        @keydown.escape.window="closeLightbox(); closeVideo(); mobileMenuOpen = false"
         @keydown.arrow-right.window="lightboxOpen && lightboxItems.length > 1 && nextLightbox()"
         @keydown.arrow-left.window="lightboxOpen && lightboxItems.length > 1 && prevLightbox()"
     >
@@ -348,7 +405,7 @@
                                 >
                                     <span class="pointer-events-none absolute inset-0 bg-orange-500/10 opacity-0 transition-opacity duration-[400ms] ease-out group-hover:opacity-100"></span>
                                     <img
-                                        src="{{ asset($product->image_path) }}"
+                                        src="{{ asset($product->thumb_path ?: $product->image_path) }}"
                                         alt="{{ $product->title }}"
                                         class="h-48 w-full object-cover transition-transform duration-[400ms] ease-out group-hover:scale-105"
                                         loading="lazy"
@@ -414,6 +471,12 @@
 
                 <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-stagger="0.1">
                     @forelse ($galleryImages as $image)
+                        @php
+                            $isVideo = (string) ($image->media_type ?? 'image') === 'video';
+                            $thumbPath = $isVideo
+                                ? ((string) ($image->video_cover_thumb_path ?? '') !== '' ? $image->video_cover_thumb_path : ((string) ($image->video_cover_path ?? '') !== '' ? $image->video_cover_path : ($image->thumb_path ?: $image->image_path)))
+                                : ((string) ($image->thumb_path ?? '') !== '' ? $image->thumb_path : $image->image_path);
+                        @endphp
                         <button
                             type="button"
                             data-stagger-item
@@ -421,12 +484,19 @@
                             @click="openGallery({{ $loop->index }})"
                         >
                             <img
-                                src="{{ asset($image->thumb_path ?: $image->image_path) }}"
+                                src="{{ asset($thumbPath) }}"
                                 alt="Galería"
                                 class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                                 loading="lazy"
                             />
                             <span class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/35 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></span>
+                            @if ($isVideo)
+                                <div class="pointer-events-none absolute inset-0 grid place-items-center">
+                                    <div class="grid size-14 place-items-center rounded-full bg-black/60 text-white">
+                                        <i class="fa-solid fa-play text-lg"></i>
+                                    </div>
+                                </div>
+                            @endif
                         </button>
                     @empty
                         <div class="col-span-full rounded-2xl border border-black/10 bg-white p-8 text-center shadow-sm">
@@ -648,6 +718,31 @@
                 <i class="fa-brands fa-whatsapp text-2xl al-icon al-icon-up"></i>
             </a>
         @endif
+
+        <div
+            class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+            x-show="videoOpen"
+            x-transition.opacity
+            @click.self="closeVideo()"
+        >
+            <div class="relative w-full max-w-5xl">
+                <div class="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-black">
+                    <button type="button" class="absolute right-3 top-3 z-10 grid size-10 place-items-center rounded-xl bg-black/60 text-white hover:bg-black/70" @click="closeVideo()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+
+                    <video
+                        x-ref="videoPlayer"
+                        :src="videoSrc"
+                        :poster="videoPoster"
+                        class="max-h-[85vh] w-full bg-black object-contain"
+                        controls
+                        autoplay
+                        playsinline
+                    ></video>
+                </div>
+            </div>
+        </div>
 
         <div
             class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"

@@ -9,5 +9,6 @@ class ProductImage extends Model
     protected $fillable = [
         'product_id',
         'image_path',
+        'thumb_path',
     ];
 }

@@ -23,6 +23,73 @@ new #[Title('Productos')] class extends Component {
     public ?string $existingImageUrl = null;
     public ?string $existingDatasheetUrl = null;
 
+    private function createThumbnail(string $sourcePath, string $thumbTargetPath, int $maxSide = 700): bool
+    {
+        if (! function_exists('imagecreatefromstring') || ! function_exists('imagecreatetruecolor')) {
+            return false;
+        }
+
+        $contents = @file_get_contents($sourcePath);
+
+        if ($contents === false) {
+            return false;
+        }
+
+        $sourceImage = @imagecreatefromstring($contents);
+
+        if ($sourceImage === false) {
+            return false;
+        }
+
+        $sourceWidth = imagesx($sourceImage);
+        $sourceHeight = imagesy($sourceImage);
+
+        if ($sourceWidth <= 0 || $sourceHeight <= 0) {
+            imagedestroy($sourceImage);
+
+            return false;
+        }
+
+        $scale = min($maxSide / $sourceWidth, $maxSide / $sourceHeight, 1);
+        $thumbWidth = max(1, (int) round($sourceWidth * $scale));
+        $thumbHeight = max(1, (int) round($sourceHeight * $scale));
+
+        $thumbImage = imagecreatetruecolor($thumbWidth, $thumbHeight);
+
+        if ($thumbImage === false) {
+            imagedestroy($sourceImage);
+
+            return false;
+        }
+
+        $isWebpTarget = str_ends_with(strtolower($thumbTargetPath), '.webp');
+
+        if ($isWebpTarget && function_exists('imagewebp')) {
+            imagealphablending($thumbImage, false);
+            imagesavealpha($thumbImage, true);
+            $transparent = imagecolorallocatealpha($thumbImage, 0, 0, 0, 127);
+            imagefilledrectangle($thumbImage, 0, 0, $thumbWidth, $thumbHeight, $transparent);
+        } else {
+            $white = imagecolorallocate($thumbImage, 255, 255, 255);
+            imagefilledrectangle($thumbImage, 0, 0, $thumbWidth, $thumbHeight, $white);
+        }
+
+        imagecopyresampled($thumbImage, $sourceImage, 0, 0, 0, 0, $thumbWidth, $thumbHeight, $sourceWidth, $sourceHeight);
+
+        $ok = false;
+
+        if ($isWebpTarget && function_exists('imagewebp')) {
+            $ok = imagewebp($thumbImage, $thumbTargetPath, 80);
+        } elseif (function_exists('imagejpeg')) {
+            $ok = imagejpeg($thumbImage, $thumbTargetPath, 82);
+        }
+
+        imagedestroy($thumbImage);
+        imagedestroy($sourceImage);
+
+        return $ok;
+    }
+
     public function create(): void
     {
         $this->reset(['editingId', 'title', 'unit', 'description', 'techSpecs', 'image', 'datasheet', 'existingImageUrl', 'existingDatasheetUrl']);
@@ -105,6 +172,7 @@ new #[Title('Productos')] class extends Component {
 
         if ($this->image) {
             $oldPublicPath = $product->image_path;
+            $oldThumbPublicPath = $product->thumb_path;
 
             $directory = public_path('image/products');
             File::ensureDirectoryExists($directory);
@@ -120,6 +188,28 @@ new #[Title('Productos')] class extends Component {
             if (filled($oldPublicPath)) {
                 File::delete(public_path($oldPublicPath));
             }
+
+            if (filled($oldThumbPublicPath)) {
+                File::delete(public_path($oldThumbPublicPath));
+            }
+
+            $thumbDirectory = public_path('image/products/thumbs');
+            File::ensureDirectoryExists($thumbDirectory);
+
+            $thumbExtension = function_exists('imagewebp') ? 'webp' : 'jpg';
+            $thumbFileName = pathinfo($fileName, PATHINFO_FILENAME).'-thumb.'.$thumbExtension;
+            $thumbTarget = $thumbDirectory.DIRECTORY_SEPARATOR.$thumbFileName;
+            $thumbPath = null;
+
+            try {
+                if ($this->createThumbnail($target, $thumbTarget)) {
+                    $thumbPath = 'image/products/thumbs/'.$thumbFileName;
+                }
+            } catch (Throwable) {
+                $thumbPath = null;
+            }
+
+            $product->thumb_path = $thumbPath;
         }
 
         if ($this->datasheet) {
@@ -171,12 +261,17 @@ new #[Title('Productos')] class extends Component {
     {
         $product = Product::query()->findOrFail($id);
         $publicPath = $product->image_path;
+        $thumbPublicPath = $product->thumb_path;
         $datasheetPublicPath = $product->datasheet_path;
 
         $product->delete();
 
         if (filled($publicPath)) {
             File::delete(public_path($publicPath));
+        }
+
+        if (filled($thumbPublicPath)) {
+            File::delete(public_path($thumbPublicPath));
         }
 
         if (filled($datasheetPublicPath)) {
@@ -186,7 +281,47 @@ new #[Title('Productos')] class extends Component {
 
     public function getProductsProperty()
     {
-        return Product::query()->latest()->get();
+        $items = Product::query()->latest()->get();
+
+        $thumbExtension = function_exists('imagewebp') ? 'webp' : 'jpg';
+
+        $thumbDirectory = public_path('image/products/thumbs');
+        File::ensureDirectoryExists($thumbDirectory);
+
+        foreach ($items as $item) {
+            $imagePath = trim((string) ($item->image_path ?? ''));
+            $hasThumb = trim((string) ($item->thumb_path ?? '')) !== '';
+
+            if ($imagePath === '' || $hasThumb) {
+                continue;
+            }
+
+            $source = public_path($imagePath);
+
+            if (! File::exists($source)) {
+                continue;
+            }
+
+            $thumbFileName = pathinfo($imagePath, PATHINFO_FILENAME).'-thumb.'.$thumbExtension;
+            $target = $thumbDirectory.DIRECTORY_SEPARATOR.$thumbFileName;
+            $publicThumbPath = 'image/products/thumbs/'.$thumbFileName;
+
+            if (! File::exists($target)) {
+                try {
+                    $this->createThumbnail($source, $target);
+                } catch (Throwable) {
+                }
+            }
+
+            if (File::exists($target)) {
+                $item->forceFill([
+                    'thumb_path' => $publicThumbPath,
+                ])->save();
+                $item->thumb_path = $publicThumbPath;
+            }
+        }
+
+        return $items;
     }
 }; ?>
 
@@ -206,7 +341,7 @@ new #[Title('Productos')] class extends Component {
             @forelse ($this->products as $product)
                 <div class="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-lg">
                     <div class="relative aspect-[16/10] overflow-hidden bg-gray-50">
-                        <img src="{{ asset($product->image_path) }}" alt="{{ $product->title }}" class="h-full w-full object-cover" />
+                        <img src="{{ asset($product->thumb_path ?: $product->image_path) }}" alt="{{ $product->title }}" class="h-full w-full object-cover" />
                     </div>
                     <div class="p-6">
                         <div class="flex items-start justify-between gap-4">
