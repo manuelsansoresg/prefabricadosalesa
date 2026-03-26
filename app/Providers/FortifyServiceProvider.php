@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -30,6 +32,7 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
+        $this->configurePasswordResetNotifications();
     }
 
     /**
@@ -70,6 +73,30 @@ class FortifyServiceProvider extends ServiceProvider
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
+        });
+    }
+
+    private function configurePasswordResetNotifications(): void
+    {
+        ResetPassword::toMailUsing(function (object $notifiable, string $token) {
+            $email = method_exists($notifiable, 'getEmailForPasswordReset')
+                ? (string) $notifiable->getEmailForPasswordReset()
+                : (string) ($notifiable->email ?? '');
+
+            $url = url(route('password.reset', [
+                'token' => $token,
+                'email' => $email,
+            ], false));
+
+            $broker = (string) (config('fortify.passwords') ?? 'users');
+            $expireMinutes = (int) (config('auth.passwords.'.$broker.'.expire') ?? 60);
+
+            return (new MailMessage)
+                ->subject('Restablecer contraseña')
+                ->view('emails.password-reset', [
+                    'resetUrl' => $url,
+                    'expireMinutes' => $expireMinutes,
+                ]);
         });
     }
 }

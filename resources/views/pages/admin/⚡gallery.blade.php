@@ -133,7 +133,7 @@ new #[Title('Galería')] class extends Component {
         set_time_limit(300);
 
         $validated = $this->validate([
-            'video' => ['required', 'file', 'mimetypes:video/mp4,video/webm', 'max:51200'],
+            'video' => ['required', 'file', 'mimetypes:video/mp4,video/webm', 'max:61440'],
             'videoCover' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
 
@@ -454,7 +454,7 @@ new #[Title('Galería')] class extends Component {
 
                     <div class="grid gap-2">
                         <div class="text-sm font-bold text-zinc-900">Video</div>
-                        <div class="text-xs font-mono text-zinc-500">Solo mp4 o webm.</div>
+                        <div class="text-xs font-mono text-zinc-500">Solo mp4 o webm. Máximo 60 MB.</div>
                         <div class="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-5 text-xs font-mono text-zinc-500 shadow-sm">
                             <input x-ref="videoInput" type="file" class="hidden" wire:model="video" accept="video/mp4,video/webm" />
                             <div class="flex items-center gap-3">

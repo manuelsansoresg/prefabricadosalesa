@@ -18,6 +18,8 @@ new #[Title('Sitio')] class extends Component {
 
     public string $contactAddress = '';
     public string $mapEmbedUrl = '';
+    public string $contactFormToEmails = '';
+    public string $contactFormBccEmails = '';
     public bool $saved = false;
 
     public string $newEmailLabel = '';
@@ -42,6 +44,8 @@ new #[Title('Sitio')] class extends Component {
         $this->currentHeroImagePath = $heroMediaPath !== '' && ! preg_match('/\.(mp4|webm)$/i', $heroMediaPath) ? $heroMediaPath : null;
         $this->contactAddress = (string) ($settings->contact_address ?? '');
         $this->mapEmbedUrl = (string) ($settings->map_embed_url ?? '');
+        $this->contactFormToEmails = (string) ($settings->contact_form_to_emails ?? '');
+        $this->contactFormBccEmails = (string) ($settings->contact_form_bcc_emails ?? '');
         $this->whatsappFloatingEnabled = (bool) ($settings->whatsapp_floating_enabled ?? true);
 
         $this->emails = $settings->contactEmails()
@@ -87,6 +91,8 @@ new #[Title('Sitio')] class extends Component {
             'heroImage' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'contactAddress' => ['nullable', 'string', 'max:2000'],
             'mapEmbedUrl' => ['nullable', 'string', 'max:2000'],
+            'contactFormToEmails' => ['nullable', 'string', 'max:2000'],
+            'contactFormBccEmails' => ['nullable', 'string', 'max:2000'],
             'whatsappFloatingEnabled' => ['boolean'],
 
             'emails' => ['array'],
@@ -131,6 +137,8 @@ new #[Title('Sitio')] class extends Component {
                 $update = [
                 'contact_address' => $address,
                 'map_embed_url' => $mapEmbedUrl,
+                'contact_form_to_emails' => trim($this->contactFormToEmails) !== '' ? trim($this->contactFormToEmails) : null,
+                'contact_form_bcc_emails' => trim($this->contactFormBccEmails) !== '' ? trim($this->contactFormBccEmails) : null,
                 'whatsapp_floating_enabled' => (bool) $this->whatsappFloatingEnabled,
                 ];
 
@@ -300,6 +308,30 @@ new #[Title('Sitio')] class extends Component {
                                 />
                             </div>
                             <input type="hidden" wire:model="mapEmbedUrl" />
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="text-lg font-bold text-zinc-900">Formulario</div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-zinc-700" for="contactFormToEmails">Enviar a (separados por coma)</label>
+                                <textarea
+                                    id="contactFormToEmails"
+                                    rows="2"
+                                    wire:model="contactFormToEmails"
+                                    placeholder="ventas@prefabricadosalesa.com, pagos@prefabricadosalesa.com"
+                                    class="w-full cursor-text rounded-lg border border-gray-100 bg-white p-3 font-mono text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E98332]/60 focus:outline-hidden"
+                                ></textarea>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-zinc-700" for="contactFormBccEmails">Copia oculta (BCC) (separados por coma)</label>
+                                <textarea
+                                    id="contactFormBccEmails"
+                                    rows="2"
+                                    wire:model="contactFormBccEmails"
+                                    placeholder="gerencia.alesa@gmail.com"
+                                    class="w-full cursor-text rounded-lg border border-gray-100 bg-white p-3 font-mono text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E98332]/60 focus:outline-hidden"
+                                ></textarea>
+                            </div>
                         </div>
 
                         <div class="space-y-4">

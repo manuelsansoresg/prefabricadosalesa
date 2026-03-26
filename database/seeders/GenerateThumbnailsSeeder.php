@@ -62,6 +62,7 @@ class GenerateThumbnailsSeeder extends Seeder
         File::ensureDirectoryExists($thumbDir);
 
         $count = 0;
+
         ProductImage::query()->chunkById(200, function ($chunk) use (&$count, $thumbDir, $thumbExt) {
             foreach ($chunk as $img) {
                 $imagePath = (string) ($img->image_path ?? '');
@@ -111,10 +112,12 @@ class GenerateThumbnailsSeeder extends Seeder
                     if ($coverPath === '') {
                         continue;
                     }
+
                     $source = public_path($coverPath);
                     if (! File::exists($source)) {
                         continue;
                     }
+
                     $thumbFile = pathinfo($coverPath, PATHINFO_FILENAME).'-thumb.'.$thumbExt;
                     $target = $coverThumbDir.DIRECTORY_SEPARATOR.$thumbFile;
                     $publicThumb = 'image/gallery/video-covers/thumbs/'.$thumbFile;
@@ -138,10 +141,12 @@ class GenerateThumbnailsSeeder extends Seeder
                 if ($imagePath === '') {
                     continue;
                 }
+
                 $source = public_path($imagePath);
                 if (! File::exists($source)) {
                     continue;
                 }
+
                 $thumbFile = pathinfo($imagePath, PATHINFO_FILENAME).'-thumb.'.$thumbExt;
                 $target = $imageThumbDir.DIRECTORY_SEPARATOR.$thumbFile;
                 $publicThumb = 'image/gallery/thumbs/'.$thumbFile;
@@ -180,6 +185,7 @@ class GenerateThumbnailsSeeder extends Seeder
         $sourceHeight = imagesy($sourceImage);
         if ($sourceWidth <= 0 || $sourceHeight <= 0) {
             imagedestroy($sourceImage);
+
             return false;
         }
 
@@ -190,6 +196,7 @@ class GenerateThumbnailsSeeder extends Seeder
         $thumbImage = imagecreatetruecolor($thumbWidth, $thumbHeight);
         if ($thumbImage === false) {
             imagedestroy($sourceImage);
+
             return false;
         }
 
@@ -219,4 +226,3 @@ class GenerateThumbnailsSeeder extends Seeder
         return $ok;
     }
 }
-

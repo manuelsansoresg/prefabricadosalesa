@@ -6,10 +6,11 @@
     {{ filled($title ?? null) ? $title.' - '.config('app.name', 'Laravel') : config('app.name', 'Laravel') }}
 </title>
 
-<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('image/logo_sm.png') }}?v=1">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('image/logo_sm.png') }}?v=1">
-<link rel="shortcut icon" type="image/png" href="{{ asset('image/logo_sm.png') }}?v=1">
-<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('image/logo_sm.png') }}?v=1">
+<link rel="icon" href="{{ asset('image/logo_sm.png') }}?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('image/logo_sm.png') }}?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('image/logo_sm.png') }}?v=2">
+<link rel="shortcut icon" type="image/png" href="{{ asset('image/logo_sm.png') }}?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('image/logo_sm.png') }}?v=2">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

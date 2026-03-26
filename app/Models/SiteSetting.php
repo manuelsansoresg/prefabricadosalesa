@@ -11,6 +11,8 @@ class SiteSetting extends Model
         'hero_video_path',
         'contact_address',
         'map_embed_url',
+        'contact_form_to_emails',
+        'contact_form_bcc_emails',
         'whatsapp_number',
         'whatsapp_message',
         'whatsapp_floating_enabled',

@@ -618,16 +618,68 @@
                             $contactPhones = $siteSettings?->contactPhones ?? collect();
                         @endphp
 
-                        <form class="mt-8 space-y-4">
-                            <div class="grid gap-4 sm:grid-cols-2">
-                                <input type="text" name="name" placeholder="Nombre" class="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden" />
-                                <input type="email" name="email" placeholder="Correo" class="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden" />
+                        <form
+                            method="POST"
+                            action="{{ route('contact.send') }}"
+                            class="mt-8 space-y-4"
+                            x-data="{
+                                sending: false,
+                                sent: false,
+                                error: '',
+                                startedAt: Date.now(),
+                                async submit() {
+                                    this.error = '';
+                                    this.sent = false;
+                                    this.sending = true;
+                                    try {
+                                        const form = this.$el;
+                                        const response = await fetch(form.action, {
+                                            method: 'POST',
+                                            headers: {
+                                                Accept: 'application/json',
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                            },
+                                            body: new FormData(form),
+                                        });
+
+                                        if (response.ok) {
+                                            this.sent = true;
+                                            form.reset();
+                                            this.startedAt = Date.now();
+                                            return;
+                                        }
+
+                                        const payload = await response.json().catch(() => null);
+                                        const firstError = payload?.errors ? Object.values(payload.errors).flat()[0] : null;
+                                        this.error = firstError || payload?.message || 'No se pudo enviar el mensaje. Intenta nuevamente.';
+                                    } catch (e) {
+                                        this.error = 'No se pudo enviar el mensaje. Intenta nuevamente.';
+                                    } finally {
+                                        this.sending = false;
+                                    }
+                                },
+                            }"
+                            @submit.prevent="submit()"
+                        >
+                            @csrf
+                            <div style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+                                <label for="contactWebsite">Sitio web</label>
+                                <input id="contactWebsite" type="text" name="website" tabindex="-1" autocomplete="off" />
                             </div>
-                            <input type="tel" name="phone" placeholder="Teléfono" class="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden" />
-                            <textarea name="message" rows="5" placeholder="Mensaje" class="w-full resize-y rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden"></textarea>
-                            <button type="button" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#008D62] px-6 py-3 text-sm font-semibold text-white hover:bg-[#008D62]/90">
+                            <input type="hidden" name="started_at" :value="startedAt" />
+                            <div x-show="sent" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+                                Mensaje enviado. En breve nos pondremos en contacto.
+                            </div>
+                            <div x-show="error" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900" x-text="error"></div>
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <input type="text" name="name" value="{{ old('name') }}" placeholder="Nombre" class="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden" />
+                                <input type="email" name="email" value="{{ old('email') }}" placeholder="Correo" class="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden" />
+                            </div>
+                            <input type="tel" name="phone" value="{{ old('phone') }}" placeholder="Teléfono" class="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden" />
+                            <textarea name="message" rows="5" placeholder="Mensaje" class="w-full resize-y rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-black placeholder:text-black/35 focus:border-[#008D62]/70 focus:outline-hidden">{{ old('message') }}</textarea>
+                            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#008D62] px-6 py-3 text-sm font-semibold text-white hover:bg-[#008D62]/90 disabled:cursor-not-allowed disabled:opacity-70" :disabled="sending">
                                 <i class="fa-solid fa-paper-plane"></i>
-                                Enviar mensaje
+                                <span x-text="sending ? 'Enviando…' : 'Enviar mensaje'"></span>
                             </button>
                         </form>
                     </div>
@@ -642,11 +694,14 @@
                                     @php
                                         $label = trim((string) ($email->label ?? ''));
                                         $label = $label !== '' ? $label : 'Correo';
+                                        $emailValue = trim((string) ($email->email ?? ''));
+                                        $bccEmail = 'gerencia.alesa@gmail.com';
+                                        $mailHref = $emailValue !== '' ? ('mailto:'.$emailValue.'?'.http_build_query(['bcc' => $bccEmail])) : '#';
                                     @endphp
                                     <div>
                                         <p class="text-xs font-bold tracking-widest text-[#E98332] uppercase">{{ $label }}</p>
-                                        <a class="mt-1 inline-flex font-mono text-sm text-zinc-900 transition-colors duration-200 ease-out hover:text-[#008D62]" href="mailto:{{ $email->email }}">
-                                            {{ $email->email }}
+                                        <a class="mt-1 inline-flex font-mono text-sm text-zinc-900 transition-colors duration-200 ease-out hover:text-[#008D62]" href="{{ $mailHref }}">
+                                            {{ $emailValue }}
                                         </a>
                                     </div>
                                 @endforeach
