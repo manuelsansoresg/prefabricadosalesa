@@ -8,6 +8,7 @@ class GalleryImage extends Model
 {
     protected $fillable = [
         'media_type',
+        'sort_order',
         'image_path',
         'thumb_path',
         'video_path',

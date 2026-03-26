@@ -452,7 +452,7 @@
         </section>
 
         <section id="galeria">
-            <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28" data-reveal>
+            <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
                     <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
@@ -469,7 +469,7 @@
                     </p>
                 </div>
 
-                <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-stagger="0.1">
+                <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     @forelse ($galleryImages as $image)
                         @php
                             $isVideo = (string) ($image->media_type ?? 'image') === 'video';
@@ -479,7 +479,6 @@
                         @endphp
                         <button
                             type="button"
-                            data-stagger-item
                             class="group relative aspect-[4/3] w-full cursor-zoom-in overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm"
                             @click="openGallery({{ $loop->index }})"
                         >

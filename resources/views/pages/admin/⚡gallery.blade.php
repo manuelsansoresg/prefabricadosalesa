@@ -15,6 +15,52 @@ new #[Title('Galería')] class extends Component {
     public array $uploads = [];
     public $video = null;
     public $videoCover = null;
+    public array $sortOrders = [];
+    public bool $sortSaved = false;
+
+    public function mount(): void
+    {
+        $this->syncSortOrders();
+    }
+
+    private function syncSortOrders(): void
+    {
+        $this->sortOrders = GalleryImage::query()
+            ->pluck('sort_order', 'id')
+            ->map(fn ($value) => (int) $value)
+            ->all();
+    }
+
+    public function updatedSortOrders(): void
+    {
+        $this->sortSaved = false;
+    }
+
+    public function saveSortOrders(): void
+    {
+        $this->sortSaved = false;
+
+        $validated = $this->validate([
+            'sortOrders' => ['required', 'array'],
+            'sortOrders.*' => ['nullable', 'integer'],
+        ]);
+
+        foreach (($validated['sortOrders'] ?? []) as $id => $order) {
+            $galleryId = (int) $id;
+            if ($galleryId <= 0) {
+                continue;
+            }
+
+            GalleryImage::query()
+                ->whereKey($galleryId)
+                ->update([
+                    'sort_order' => (int) $order,
+                ]);
+        }
+
+        $this->syncSortOrders();
+        $this->sortSaved = true;
+    }
 
     private function createThumbnail(string $sourcePath, string $thumbTargetPath, int $maxSide = 700): bool
     {
@@ -98,6 +144,11 @@ new #[Title('Galería')] class extends Component {
         $thumbDirectory = public_path('image/gallery/thumbs');
         File::ensureDirectoryExists($thumbDirectory);
 
+        $maxSort = GalleryImage::query()->max('sort_order');
+        $maxSort = is_null($maxSort) ? 0 : (int) $maxSort;
+        $startSort = $maxSort + 1;
+        $sortIndex = 0;
+
         foreach ($validated['uploads'] as $image) {
             $extension = strtolower($image->getClientOriginalExtension() ?: 'jpg');
             $fileName = now()->format('YmdHis').'-'.Str::random(12).'.'.$extension;
@@ -120,12 +171,16 @@ new #[Title('Galería')] class extends Component {
 
             GalleryImage::query()->create([
                 'media_type' => 'image',
+                'sort_order' => $startSort + $sortIndex,
                 'image_path' => 'image/gallery/'.$fileName,
                 'thumb_path' => $thumbPath,
             ]);
+
+            $sortIndex++;
         }
 
         $this->reset(['showUploader', 'uploads']);
+        $this->syncSortOrders();
     }
 
     public function saveVideoUpload(): void
@@ -173,9 +228,12 @@ new #[Title('Galería')] class extends Component {
 
         $coverPath = 'image/gallery/video-covers/'.$coverFileName;
         $videoPath = 'videos/gallery/'.$videoFileName;
+        $maxSort = GalleryImage::query()->max('sort_order');
+        $maxSort = is_null($maxSort) ? 0 : (int) $maxSort;
 
         GalleryImage::query()->create([
             'media_type' => 'video',
+            'sort_order' => $maxSort + 1,
             'image_path' => $coverPath,
             'thumb_path' => $coverThumbPath,
             'video_path' => $videoPath,
@@ -184,6 +242,7 @@ new #[Title('Galería')] class extends Component {
         ]);
 
         $this->reset(['showVideoUploader', 'video', 'videoCover']);
+        $this->syncSortOrders();
     }
 
     public function delete(int $id): void
@@ -218,11 +277,16 @@ new #[Title('Galería')] class extends Component {
         foreach ($paths as $publicPath) {
             File::delete(public_path($publicPath));
         }
+
+        $this->syncSortOrders();
     }
 
     public function getImagesProperty()
     {
-        $items = GalleryImage::query()->latest()->get();
+        $items = GalleryImage::query()
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
+            ->get();
 
         $thumbExtension = function_exists('imagewebp') ? 'webp' : 'jpg';
 
@@ -316,6 +380,9 @@ new #[Title('Galería')] class extends Component {
                 <div class="mt-1 text-xs font-mono text-zinc-500">Sube imágenes (jpg, png, webp) para la sección Galería.</div>
             </div>
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                <button type="button" wire:click="saveSortOrders" class="inline-flex h-11 items-center justify-center rounded-full border border-gray-200 bg-white px-6 text-sm font-bold text-zinc-700 shadow-sm hover:bg-zinc-50">
+                    Guardar orden
+                </button>
                 <button type="button" wire:click="$set('showUploader', true)" class="inline-flex h-11 items-center justify-center rounded-full bg-[#008D62] px-6 text-sm font-bold text-white shadow-sm hover:bg-[#007A55]">
                     Subir imágenes
                 </button>
@@ -324,6 +391,10 @@ new #[Title('Galería')] class extends Component {
                 </button>
             </div>
         </div>
+
+        @if ($sortSaved)
+            <flux:callout variant="success" icon="check-circle" heading="Orden guardado" />
+        @endif
 
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             @forelse ($this->images as $img)
@@ -342,6 +413,17 @@ new #[Title('Galería')] class extends Component {
                         <button type="button" wire:click="delete({{ $img->id }})" class="inline-flex items-center justify-center rounded-full bg-white/90 p-2 text-red-600 shadow-sm hover:bg-red-50" aria-label="Eliminar">
                             <flux:icon.trash variant="outline" class="size-5" />
                         </button>
+                    </div>
+                    <div class="border-t border-gray-100 p-4">
+                        <label class="text-[10px] font-mono font-bold tracking-widest text-zinc-500 uppercase" for="order-{{ $img->id }}">Orden</label>
+                        <input
+                            id="order-{{ $img->id }}"
+                            type="number"
+                            inputmode="numeric"
+                            wire:model.defer="sortOrders.{{ $img->id }}"
+                            class="mt-2 h-11 w-full rounded-2xl border border-gray-100 bg-white px-4 text-sm font-mono text-zinc-900 shadow-sm focus:border-[#E98332]/60 focus:outline-hidden"
+                        />
+                        <div class="mt-1 text-[11px] font-mono text-zinc-400">Menor = primero</div>
                     </div>
                 </div>
             @empty

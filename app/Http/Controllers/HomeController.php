@@ -15,7 +15,10 @@ class HomeController extends Controller
         return view('welcome', [
             'about' => AboutContent::query()->first(),
             'products' => Product::query()->latest()->take(12)->get(),
-            'galleryImages' => GalleryImage::query()->latest()->take(24)->get(),
+            'galleryImages' => GalleryImage::query()
+                ->orderBy('sort_order')
+                ->orderByDesc('id')
+                ->get(),
             'siteSettings' => SiteSetting::query()->first(),
         ]);
     }
