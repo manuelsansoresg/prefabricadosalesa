@@ -714,7 +714,10 @@
                                             $phoneTrimmed = trim((string) $phone->phone);
                                             $tel = preg_replace('/\s+/', '', $phoneTrimmed);
                                         @endphp
-                                        <a class="mt-1 block font-mono text-sm text-zinc-900 transition-colors duration-200 ease-out hover:text-[#008D62]" href="tel:{{ $tel }}">{{ $phoneTrimmed }}</a>
+                                        <div class="mt-1 flex items-center gap-2">
+                                            <i class="fa-brands fa-whatsapp text-[#008D62]"></i>
+                                            <a class="font-mono text-sm text-zinc-900 transition-colors duration-200 ease-out hover:text-[#008D62]" href="tel:{{ $tel }}">{{ $phoneTrimmed }}</a>
+                                        </div>
                                     @endforeach
                                 </div>
                             @endif
