@@ -50,6 +50,15 @@
         @apply font-normal leading-relaxed;
     }
 
+    button, 
+    a, 
+    [role="button"],
+    input[type="button"], 
+    input[type="submit"], 
+    input[type="reset"] {
+        cursor: pointer;
+    }
+
     h2,
     h3 {
         @apply font-extrabold;

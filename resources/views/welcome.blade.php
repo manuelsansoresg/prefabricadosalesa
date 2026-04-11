@@ -148,16 +148,9 @@
         <header class="fixed inset-x-0 top-0 z-50">
             <nav x-ref="headerNav" class="w-full bg-white/90 backdrop-blur-sm transition-all duration-300 ease-out">
                 <div x-ref="headerInner" class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center justify-between py-3 transition-all duration-300 ease-out md:py-4">
-                    <a href="#inicio" class="flex items-center gap-3">
-                        <img
-                            src="{{ asset('image/logo_transparente.png') }}"
-                            alt="Prefabricados Alesa"
-                            x-ref="headerLogo"
-                            class="!h-10 !w-auto object-contain transition-all duration-300 ease-out md:!h-14"
-                        />
-                    </a>
+                    <div class="h-10 w-10 md:h-14 md:w-14"></div>
 
-                    <div class="hidden items-center gap-8 text-[13px] leading-none font-medium tracking-wide uppercase text-[#1A1A1A] md:flex">
+                    <div class="hidden items-center gap-8 text-[13px] leading-none font-bold tracking-wide uppercase text-[#008D62] md:flex">
                         <a href="#inicio" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Inicio</a>
                         <a href="#nosotros" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Nosotros</a>
                         <a href="#productos" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Productos</a>
@@ -190,7 +183,7 @@
                     x-transition
                     @click.outside="mobileMenuOpen = false"
                 >
-                    <div class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl flex-col gap-3 py-4 text-[13px] leading-none font-medium tracking-wide uppercase text-[#1A1A1A]">
+                    <div class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl flex-col gap-3 py-4 text-[13px] leading-none font-bold tracking-wide uppercase text-[#008D62]">
                         <a href="#inicio" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Inicio</a>
                         <a href="#nosotros" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Nosotros</a>
                         <a href="#productos" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Productos</a>
@@ -216,34 +209,50 @@
                 />
             </div>
 
-            <div class="relative flex min-h-[75svh] flex-col justify-center px-6 pb-10 pt-28 sm:min-h-[100svh] sm:p-16">
-                <div class="w-full max-w-2xl rounded-3xl bg-white/55 p-6 backdrop-blur-sm md:max-w-[45%] lg:max-w-[40%]">
-                    <p data-reveal style="transition-delay:0.2s" class="al-reveal al-reveal-left mx-auto inline-flex w-fit items-center gap-2 rounded-full bg-[#008D62] px-4 py-2 text-center text-xs font-bold text-white sm:mx-0 sm:text-left">
-                        <span class="inline-block size-2 rounded-full bg-white/90"></span>
-                        Materiales de construcción y renta de maquinaria
-                    </p>
+            <style>
+                @keyframes alCreditsScroll {
+                    0% { transform: translateY(110%) rotateX(18deg); opacity: 0; }
+                    12% { opacity: 1; }
+                    100% { transform: translateY(-100%) rotateX(18deg); opacity: 1; }
+                }
+                .al-credits-mask {
+                    overflow: hidden;
+                    -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+                    mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+                }
+                .al-credits-stage { perspective: 700px; }
+                .al-credits-track { animation: alCreditsScroll 15s linear infinite; transform-origin: 50% 100%; }
+                @media (prefers-reduced-motion: reduce) {
+                    .al-credits-track { animation: none; transform: none; }
+                }
+            </style>
 
-                    <h1 data-reveal style="transition-delay:0.4s" class="al-reveal mt-6 text-4xl font-black leading-tight tracking-tight text-[#0f172a] md:text-6xl">
-                        Construye con
-                        <span class="text-orange-600">calidad</span>
-                        lo que tu proyecto exige
-                    </h1>
+            <div class="relative mx-auto grid min-h-[75svh] w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center gap-10 px-6 pb-10 pt-28 sm:min-h-[100svh] sm:px-0 sm:pb-16 sm:pt-32 md:grid-cols-2">
+                <div class="flex items-center justify-center">
+                    <img
+                        src="{{ asset('image/logo_transparente.png') }}"
+                        alt="Prefabricados Alesa"
+                        class="pointer-events-none w-[92%] max-w-xl select-none opacity-40 drop-shadow-[0_0_14px_rgba(255,255,255,0.35)] md:opacity-70"
+                        loading="eager"
+                    />
+                </div>
 
-                    <p data-reveal style="transition-delay:0.6s" class="al-reveal mt-5 text-base font-medium leading-relaxed text-[#111827] md:text-lg">
-                        Tecnología alemana y calidad industrial al servicio de la obra en Campeche. Productos de alto rendimiento para resultados que duran.
-                    </p>
+                <div class="w-full">
+                    <div class="w-full max-w-2xl rounded-3xl bg-white/55 p-6 backdrop-blur-sm md:ml-auto">
+                        <div class="al-credits-stage">
+                            <div class="al-credits-mask relative h-[340px] sm:h-[420px]">
+                                <div class="al-credits-track absolute inset-x-0 top-0 text-center">
+                                    <h1 class="text-4xl font-black leading-tight tracking-tight text-[#0f172a] md:text-4xl">
+                                        <span class="text-orange-600"> PREFABRICADOS ALESA, S.A. DE C.V.</span>
+                                        LO QUE TU PROYECTO NECESITA ES CALIDAD
+                                    </h1>
 
-                    <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:items-start">
-                        <a
-                            href="#productos"
-                            data-reveal
-                            style="transition-delay:0.8s"
-                            data-icon-shift
-                            class="al-reveal inline-flex w-fit items-center justify-center gap-2 rounded-2xl border border-[#E98332] bg-white px-6 py-3 text-sm font-bold text-[#E98332] shadow-sm hover:bg-orange-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#E98332]/40"
-                        >
-                            <i class="fa-solid fa-layer-group al-icon al-icon-right"></i>
-                            Ver productos
-                        </a>
+                                    <p class="mt-8 text-left text-base font-medium leading-relaxed text-[#111827] md:text-lg">
+                                        JUNTAMOS  LA TECNOLOGIA CON ISUMOS DE CALIDAD, PARA QUE NUESTROS PRODUCTOS SEAN  CONFIABLES Y PERDURABLES, CUMPLIENDO SIEMPRE CON LAS NORMAS QUE RIGEN LA INDUSTRIA DE LA CONSTRUCCION.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -367,7 +376,7 @@
                             $rawTechSpecs = is_array($product->tech_specs) ? $product->tech_specs : [];
                             $specs = collect($rawTechSpecs)
                                 ->map(fn ($row) => [trim((string) ($row['label'] ?? '')), trim((string) ($row['value'] ?? ''))])
-                                ->filter(fn ($row) => filled($row[0]) && filled($row[1]))
+                                ->filter(fn ($row) => filled($row[0]) || filled($row[1]))
                                 ->values();
 
                             if ($specs->isEmpty()) {
@@ -381,7 +390,7 @@
                                     [$label, $value] = array_pad(explode($delimiter, $line, 2), 2, '');
 
                                     return [trim($label), trim($value)];
-                                })->filter(fn ($row) => filled($row[0]) && filled($row[1]))->values();
+                                })->filter(fn ($row) => filled($row[0]) || filled($row[1]))->values();
 
                                 if ($specs->isEmpty() && filled($description)) {
                                     $specs = collect([['Descripción', $description]]);

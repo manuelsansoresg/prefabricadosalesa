@@ -159,7 +159,7 @@ new #[Title('Productos')] class extends Component {
                     'value' => trim((string) ($row['value'] ?? '')),
                 ];
             })
-            ->filter(fn ($row) => filled($row['label']) && filled($row['value']))
+            ->filter(fn ($row) => filled($row['label']) || filled($row['value']))
             ->values()
             ->all();
 
