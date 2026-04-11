@@ -35,11 +35,21 @@
                 })
                 ->values()),
             mobileMenuOpen: false,
+            _creditsResizeTimer: null,
             get lightboxCurrentSrc() { return this.lightboxItems.length ? this.lightboxItems[this.lightboxIndex] : this.lightboxSrc; },
             get galleryImageItems() { return (this.galleryItems || []).filter(i => i && i.type === 'image'); },
             init() {
                 this.onScroll();
                 window.addEventListener('scroll', this.onScroll.bind(this), { passive: true });
+                this.initCredits();
+                window.addEventListener(
+                    'resize',
+                    () => {
+                        clearTimeout(this._creditsResizeTimer);
+                        this._creditsResizeTimer = setTimeout(() => this.initCredits(), 120);
+                    },
+                    { passive: true }
+                );
             },
             onScroll() {
                 const scrolled = window.scrollY > 12;
@@ -140,12 +150,30 @@
                 const img = new Image();
                 img.src = this.lightboxItems[nextIndex];
             },
+            initCredits() {
+                const stages = document.querySelectorAll('[data-al-credits]');
+                stages.forEach((stage) => {
+                    const mask = stage.querySelector('[data-al-credits-mask]');
+                    const track = stage.querySelector('[data-al-credits-track]');
+                    const block = stage.querySelector('[data-al-credits-block]');
+                    if (!mask || !track || !block) return;
+
+                    const loopHeight = Math.ceil(block.getBoundingClientRect().height);
+                    const maskHeight = Math.ceil(mask.getBoundingClientRect().height);
+                    if (!loopHeight || !maskHeight) return;
+
+                    const startOffset = Math.max(0, maskHeight - loopHeight + 1);
+                    track.style.setProperty('--al-credits-loop', `${loopHeight}px`);
+                    track.style.setProperty('--al-credits-start', `${startOffset}px`);
+                    track.dataset.alReady = '1';
+                });
+            },
         }"
         @keydown.escape.window="closeLightbox(); closeVideo(); mobileMenuOpen = false"
         @keydown.arrow-right.window="lightboxOpen && lightboxItems.length > 1 && nextLightbox()"
         @keydown.arrow-left.window="lightboxOpen && lightboxItems.length > 1 && prevLightbox()"
     >
-        <header class="fixed inset-x-0 top-0 z-50">
+        <header class="hidden md:block fixed inset-x-0 top-0 z-50">
             <nav x-ref="headerNav" class="w-full bg-white/90 backdrop-blur-sm transition-all duration-300 ease-out">
                 <div x-ref="headerInner" class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center justify-between py-3 transition-all duration-300 ease-out md:py-4">
                     <div class="h-10 w-10 md:h-14 md:w-14"></div>
@@ -157,44 +185,35 @@
                         <a href="#galeria" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Galería</a>
                         <a href="#contacto" class="relative pb-1 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100">Contacto</a>
                     </div>
-
-                    <div class="flex items-center gap-3">
-                        <button
-                            type="button"
-                            class="inline-flex size-10 items-center justify-center rounded-xl border border-black/10 text-[#1A1A1A] hover:bg-black/5 md:hidden"
-                            @click="mobileMenuOpen = !mobileMenuOpen"
-                            :aria-expanded="mobileMenuOpen.toString()"
-                            aria-controls="mobile-menu"
-                            aria-label="Abrir menú"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 6h16"></path>
-                                <path d="M4 12h16"></path>
-                                <path d="M4 18h16"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div
-                    id="mobile-menu"
-                        class="border-t border-black/10 bg-white/95 backdrop-blur-sm md:hidden"
-                    x-show="mobileMenuOpen"
-                    x-transition
-                    @click.outside="mobileMenuOpen = false"
-                >
-                    <div class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl flex-col gap-3 py-4 text-[13px] leading-none font-bold tracking-wide uppercase text-[#008D62]">
-                        <a href="#inicio" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Inicio</a>
-                        <a href="#nosotros" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Nosotros</a>
-                        <a href="#productos" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Productos</a>
-                        <a href="#galeria" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Galería</a>
-                        <a href="#contacto" class="relative inline-flex py-2 pb-3 transition-colors duration-200 hover:text-[#008D62] after:absolute after:inset-x-0 after:bottom-1 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#008D62] after:transition-transform after:duration-200 hover:after:scale-x-100" @click="mobileMenuOpen = false">Contacto</a>
-                    </div>
                 </div>
             </nav>
         </header>
 
-        <section id="inicio" class="relative min-h-[75svh] overflow-hidden sm:min-h-[100svh]">
+        <!-- Mobile Bottom Navigation -->
+        <nav class="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-black/10 bg-white/95 pb-3 pt-3 backdrop-blur-sm md:hidden">
+            <a href="#inicio" class="flex flex-col items-center gap-1 px-2 text-[10px] font-bold tracking-wide uppercase text-[#008D62]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                Inicio
+            </a>
+            <a href="#nosotros" class="flex flex-col items-center gap-1 px-2 text-[10px] font-bold tracking-wide uppercase text-slate-500 hover:text-[#008D62]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                Nosotros
+            </a>
+            <a href="#productos" class="flex flex-col items-center gap-1 px-2 text-[10px] font-bold tracking-wide uppercase text-slate-500 hover:text-[#008D62]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                Productos
+            </a>
+            <a href="#galeria" class="flex flex-col items-center gap-1 px-2 text-[10px] font-bold tracking-wide uppercase text-slate-500 hover:text-[#008D62]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                Galería
+            </a>
+            <a href="#contacto" class="flex flex-col items-center gap-1 px-2 text-[10px] font-bold tracking-wide uppercase text-slate-500 hover:text-[#008D62]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                Contacto
+            </a>
+        </nav>
+
+        <section id="inicio" class="relative min-h-[40svh] overflow-hidden sm:min-h-[100svh]">
             <div class="absolute inset-0">
                 @php
                     $heroMediaPath = (string) ($siteSettings?->hero_video_path ?? '');
@@ -210,25 +229,25 @@
             </div>
 
             <style>
-                @keyframes alCreditsScroll {
-                    0% { transform: translateY(110%) rotateX(18deg); opacity: 0; }
-                    12% { opacity: 1; }
-                    100% { transform: translateY(-100%) rotateX(18deg); opacity: 1; }
-                }
                 .al-credits-mask {
                     overflow: hidden;
-                    -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
-                    mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+                    -webkit-mask-image: linear-gradient(to bottom, transparent, black 6%, black 97%, transparent);
+                    mask-image: linear-gradient(to bottom, transparent, black 6%, black 97%, transparent);
                 }
                 .al-credits-stage { perspective: 700px; }
-                .al-credits-track { animation: alCreditsScroll 15s linear infinite; transform-origin: 50% 100%; }
+                @keyframes alCreditsScroll {
+                    0% { transform: translate3d(0, var(--al-credits-start, 0px), 0) rotateX(18deg); }
+                    100% { transform: translate3d(0, calc(var(--al-credits-start, 0px) - var(--al-credits-loop, 0px)), 0) rotateX(18deg); }
+                }
+                .al-credits-track { animation: alCreditsScroll 26s linear infinite; transform-origin: 50% 100%; top: 0; will-change: transform; opacity: 0; }
+                .al-credits-track[data-al-ready="1"] { opacity: 1; }
                 @media (prefers-reduced-motion: reduce) {
                     .al-credits-track { animation: none; transform: none; }
                 }
             </style>
 
-            <div class="relative mx-auto grid min-h-[75svh] w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center gap-10 px-6 pb-10 pt-28 sm:min-h-[100svh] sm:px-0 sm:pb-16 sm:pt-32 md:grid-cols-2">
-                <div class="flex items-center justify-center">
+            <div class="relative mx-auto grid min-h-[40svh] w-[min(1280px,calc(100%-2rem))] max-w-7xl items-start md:items-center gap-10 px-6 pb-10 pt-24 sm:min-h-[100svh] sm:px-0 sm:pb-16 sm:pt-32 md:grid-cols-2">
+                <div class="hidden md:flex items-center justify-center">
                     <img
                         src="{{ asset('image/logo_transparente.png') }}"
                         alt="Prefabricados Alesa"
@@ -238,18 +257,42 @@
                 </div>
 
                 <div class="w-full">
-                    <div class="w-full max-w-2xl rounded-3xl bg-white/55 p-6 backdrop-blur-sm md:ml-auto">
-                        <div class="al-credits-stage">
-                            <div class="al-credits-mask relative h-[340px] sm:h-[420px]">
-                                <div class="al-credits-track absolute inset-x-0 top-0 text-center">
-                                    <h1 class="text-4xl font-black leading-tight tracking-tight text-[#0f172a] md:text-4xl">
-                                        <span class="text-orange-600"> PREFABRICADOS ALESA, S.A. DE C.V.</span>
-                                        LO QUE TU PROYECTO NECESITA ES CALIDAD
-                                    </h1>
+                    <div class="relative w-full max-w-2xl overflow-hidden rounded-3xl bg-white/55 p-6 backdrop-blur-sm md:ml-auto">
+                        <img
+                            src="{{ asset('image/logo_transparente.png') }}"
+                            alt="Fondo móvil"
+                            class="absolute inset-0 h-full w-full object-contain p-8 opacity-40 pointer-events-none select-none md:hidden"
+                        />
+                        <div class="relative z-10 al-credits-stage" data-al-credits>
+                            <div class="al-credits-mask relative h-[260px] sm:h-[320px] md:h-[460px]" data-al-credits-mask>
+                                <div class="al-credits-track absolute inset-x-0 top-0" data-al-credits-track data-al-ready="0">
+                                    <div class="al-credits-block text-center" data-al-credits-block>
+                                        <div class="pt-16 md:pt-0">
+                                            <h1 class="text-xl font-black leading-tight tracking-tight text-[#0f172a] md:text-3xl">
+                                                <span class="text-orange-600"> PREFABRICADOS ALESA, S.A. DE C.V.</span>
+                                                <br>LO QUE TU PROYECTO NECESITA ES CALIDAD
+                                            </h1>
 
-                                    <p class="mt-8 text-left text-base font-medium leading-relaxed text-[#111827] md:text-lg">
-                                        JUNTAMOS  LA TECNOLOGIA CON ISUMOS DE CALIDAD, PARA QUE NUESTROS PRODUCTOS SEAN  CONFIABLES Y PERDURABLES, CUMPLIENDO SIEMPRE CON LAS NORMAS QUE RIGEN LA INDUSTRIA DE LA CONSTRUCCION.
-                                    </p>
+                                            <p class="mt-4 text-left text-xs font-medium leading-relaxed text-[#111827] md:mt-8 md:text-base">
+                                                JUNTAMOS  LA TECNOLOGIA CON ISUMOS DE CALIDAD, PARA QUE NUESTROS PRODUCTOS SEAN  CONFIABLES Y PERDURABLES, CUMPLIENDO SIEMPRE CON LAS NORMAS QUE RIGEN LA INDUSTRIA DE LA CONSTRUCCION.
+                                            </p>
+                                        </div>
+                                        <div class="h-10 md:h-32"></div>
+                                    </div>
+
+                                    <div class="al-credits-block text-center" aria-hidden="true">
+                                        <div class="pt-16 md:pt-0">
+                                            <h1 class="text-xl font-black leading-tight tracking-tight text-[#0f172a] md:text-3xl">
+                                                <span class="text-orange-600"> PREFABRICADOS ALESA, S.A. DE C.V.</span>
+                                                <br>LO QUE TU PROYECTO NECESITA ES CALIDAD
+                                            </h1>
+
+                                            <p class="mt-4 text-left text-xs font-medium leading-relaxed text-[#111827] md:mt-8 md:text-base">
+                                                JUNTAMOS  LA TECNOLOGIA CON ISUMOS DE CALIDAD, PARA QUE NUESTROS PRODUCTOS SEAN  CONFIABLES Y PERDURABLES, CUMPLIENDO SIEMPRE CON LAS NORMAS QUE RIGEN LA INDUSTRIA DE LA CONSTRUCCION.
+                                            </p>
+                                        </div>
+                                        <div class="h-10 md:h-32"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -772,7 +815,7 @@
                 target="_blank"
                 rel="noopener"
                 data-icon-shift
-                class="fixed bottom-6 right-6 z-[55] grid size-14 place-items-center rounded-full bg-[#008D62] text-white shadow-lg shadow-black/20 hover:bg-[#008D62]/90"
+                class="fixed bottom-28 md:bottom-6 right-6 z-[55] grid size-14 place-items-center rounded-full bg-[#008D62] text-white shadow-lg shadow-black/20 hover:bg-[#008D62]/90"
                 aria-label="Abrir WhatsApp"
                 x-data="{ links: @js($whatsappLinks) }"
                 @click.prevent="
