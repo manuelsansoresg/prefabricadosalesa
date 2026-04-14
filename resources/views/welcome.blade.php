@@ -358,35 +358,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="mt-8 grid gap-4 sm:grid-cols-2">
-                            <div class="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                                <div class="flex items-center gap-3">
-                                    <span class="grid size-10 place-items-center rounded-xl bg-[#E98332]/15 text-[#E98332]">
-                                        <i class="fa-solid fa-award"></i>
-                                    </span>
-                                    <p class="text-sm font-semibold">{{ $about?->card_1_title ?? 'Calidad industrial' }}</p>
-                                </div>
-                                <p class="mt-4 text-sm text-zinc-600">{{ $about?->card_1_body ?? 'Control y consistencia para piezas listas para instalar.' }}</p>
-                            </div>
-                            <div class="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                                <div class="flex items-center gap-3">
-                                    <span class="grid size-10 place-items-center rounded-xl bg-[#008D62]/15 text-[#008D62]">
-                                        <i class="fa-solid fa-gears"></i>
-                                    </span>
-                                    <p class="text-sm font-semibold">{{ $about?->card_2_title ?? 'Tecnología Euroblock' }}</p>
-                                </div>
-                                <p class="mt-4 text-sm text-zinc-600">
-                                    @php
-                                        $card2Text = $about?->card_2_body ?? 'Tecnología alemana (Euroblock 2005) como base de producción.';
-                                        $card2Html = e($card2Text);
-                                        $card2Html = preg_replace('/\b(2004|2005|modelo\s+\d{4})\b/iu', '<span class="font-mono font-semibold">$0</span>', $card2Html);
-                                    @endphp
-                                    {!! $card2Html !!}
-                                </p>
-                            </div>
-                          
-                        </div>
                     </div>
                 </div>
             </div>
