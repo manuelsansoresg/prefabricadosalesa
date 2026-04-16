@@ -4,7 +4,7 @@
         @include('partials.head', ['title' => 'Prefabricados Alesa'])
     </head>
     <body
-        class="bg-white text-[#1A1A1A] antialiased"
+        class="bg-[#DCFCE7] text-[#1A1A1A] antialiased"
         x-data="{
             lightboxOpen: false,
             lightboxSrc: null,
@@ -174,23 +174,25 @@
         @keydown.arrow-left.window="lightboxOpen && lightboxItems.length > 1 && prevLightbox()"
     >
         <header class="hidden md:block fixed inset-x-0 top-0 z-50">
-            <nav x-ref="headerNav" class="w-full bg-white/90 backdrop-blur-sm transition-all duration-300 ease-out">
+            <nav x-ref="headerNav" class="w-full bg-[#DCFCE7]/95 backdrop-blur-sm transition-all duration-300 ease-out">
                 <div x-ref="headerInner" class="mx-auto flex w-[min(1280px,calc(100%-2rem))] max-w-7xl items-center justify-between py-3 transition-all duration-300 ease-out md:py-4">
                     <div class="h-10 w-10 md:h-14 md:w-14"></div>
 
-                    <div class="hidden items-center gap-8 text-[15px] leading-none font-bold tracking-wide uppercase text-[#E98332] md:flex">
+                    <div class="hidden items-center gap-8 text-[17px] leading-none font-bold tracking-wide uppercase text-[#E98332] md:flex">
                         <a href="#inicio" class="relative pb-1 transition-colors duration-200 hover:text-[#E98332] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Inicio</a>
                         <a href="#nosotros" class="relative pb-1 transition-colors duration-200 hover:text-[#E98332] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Nosotros</a>
                         <a href="#productos" class="relative pb-1 transition-colors duration-200 hover:text-[#E98332] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Productos</a>
                         <a href="#galeria" class="relative pb-1 transition-colors duration-200 hover:text-[#E98332] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Galería</a>
                         <a href="#contacto" class="relative pb-1 transition-colors duration-200 hover:text-[#E98332] after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#E98332] after:transition-transform after:duration-200 hover:after:scale-x-100">Contacto</a>
                     </div>
+
+                    <div class="h-10 w-10 md:h-14 md:w-14"></div>
                 </div>
             </nav>
         </header>
 
         <!-- Mobile Bottom Navigation -->
-        <nav class="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-black/10 bg-white/95 pb-3 pt-3 backdrop-blur-sm md:hidden">
+        <nav class="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-black/10 bg-[#DCFCE7]/95 pb-3 pt-3 backdrop-blur-sm md:hidden">
             <a href="#inicio" class="flex flex-col items-center gap-1 px-2 text-[10px] font-bold tracking-wide uppercase text-[#008D62]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                 Inicio
@@ -213,7 +215,7 @@
             </a>
         </nav>
 
-        <section id="inicio" class="relative min-h-[40svh] overflow-hidden sm:min-h-[100svh]">
+        <section id="inicio" class="relative min-h-[40svh] overflow-hidden bg-[#DCFCE7] sm:min-h-[100svh]">
             <div class="absolute inset-0">
                 @php
                     $heroMediaPath = (string) ($siteSettings?->hero_video_path ?? '');
@@ -227,6 +229,7 @@
                     loading="eager"
                 />
             </div>
+            <div class="absolute inset-0 bg-[#DCFCE7]/25"></div>
 
             <style>
                 .al-credits-mask {
@@ -274,7 +277,7 @@
                                             </h1>
 
                                             <p class="mt-4 text-left text-xs font-medium leading-relaxed text-[#111827] md:mt-8 md:text-base">
-                                                JUNTAMOS  LA TECNOLOGIA CON ISUMOS DE CALIDAD, PARA QUE NUESTROS PRODUCTOS SEAN  CONFIABLES Y PERDURABLES, CUMPLIENDO SIEMPRE CON LAS NORMAS QUE RIGEN LA INDUSTRIA DE LA CONSTRUCCION.
+                                                JUNTAMOS LA TECNOLOGÍA CON INSUMOS DE CALIDAD, PARA QUE NUESTROS PRODUCTOS SEAN CONFIABLES Y PERDURABLES, CUMPLIENDO SIEMPRE CON LAS NORMAS QUE RIGEN LA INDUSTRIA DE LA CONSTRUCCIÓN.
                                             </p>
                                         </div>
                                         <div class="h-10 md:h-32"></div>
@@ -288,7 +291,7 @@
                                             </h1>
 
                                             <p class="mt-4 text-left text-xs font-medium leading-relaxed text-[#111827] md:mt-8 md:text-base">
-                                                JUNTAMOS  LA TECNOLOGIA CON ISUMOS DE CALIDAD, PARA QUE NUESTROS PRODUCTOS SEAN  CONFIABLES Y PERDURABLES, CUMPLIENDO SIEMPRE CON LAS NORMAS QUE RIGEN LA INDUSTRIA DE LA CONSTRUCCION.
+                                                JUNTAMOS LA TECNOLOGÍA CON INSUMOS DE CALIDAD, PARA QUE NUESTROS PRODUCTOS SEAN CONFIABLES Y PERDURABLES, CUMPLIENDO SIEMPRE CON LAS NORMAS QUE RIGEN LA INDUSTRIA DE LA CONSTRUCCIÓN.
                                             </p>
                                         </div>
                                         <div class="h-10 md:h-32"></div>
@@ -302,11 +305,11 @@
 
         </section>
 
-        <section id="nosotros" class="relative">
+        <section id="nosotros" class="relative bg-[#DCFCE7]">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28" data-reveal>
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
-                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-8 py-3 text-base font-black tracking-widest text-[#E98332] uppercase md:px-10 md:text-lg">
                        
                         Nosotros
                     </span>
@@ -315,8 +318,8 @@
 
                 <div class="grid gap-10 md:grid-cols-12 md:gap-12">
                     <div class="order-2 md:order-1 md:col-span-6 md:flex md:items-center">
-                        <div class="w-full overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
-                            <div class="relative aspect-[4/3] w-full bg-white">
+                        <div class="w-full overflow-hidden rounded-2xl border border-black/10 bg-[#DCFCE7] shadow-sm">
+                            <div class="relative aspect-[4/3] w-full bg-[#DCFCE7]">
                                 <img src="{{ asset($about?->image_path ?: 'image/empresa.jpg') }}" alt="Prefabricados Alesa" class="absolute inset-0 h-full w-full object-cover" />
                             </div>
                         </div>
@@ -363,11 +366,11 @@
             </div>
         </section>
 
-        <section id="productos" class="bg-[#F9FAFB]">
+        <section id="productos" class="bg-[#DCFCE7]">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
-                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-8 py-3 text-base font-black tracking-widest text-[#E98332] uppercase md:px-10 md:text-lg">
                        
                         Productos
                     </span>
@@ -474,11 +477,11 @@
             </div>
         </section>
 
-        <section id="galeria">
+        <section id="galeria" class="bg-[#DCFCE7]">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28">
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
-                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-8 py-3 text-base font-black tracking-widest text-[#E98332] uppercase md:px-10 md:text-lg">
                         
                         Galería
                     </span>
@@ -502,7 +505,7 @@
                         @endphp
                         <button
                             type="button"
-                            class="group relative aspect-[4/3] w-full cursor-zoom-in overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm"
+                            class="group relative aspect-[4/3] w-full cursor-zoom-in overflow-hidden rounded-2xl border border-black/10 bg-[#DCFCE7] shadow-sm"
                             @click="openGallery({{ $loop->index }})"
                         >
                             <img
@@ -521,7 +524,7 @@
                             @endif
                         </button>
                     @empty
-                        <div class="col-span-full rounded-2xl border border-black/10 bg-white p-8 text-center shadow-sm">
+                        <div class="col-span-full rounded-2xl border border-black/10 bg-[#DCFCE7] p-8 text-center shadow-sm">
                             <p class="text-sm text-zinc-600">Aún no hay imágenes en la galería. Entra al panel para subirlas.</p>
                         </div>
                     @endforelse
@@ -529,11 +532,11 @@
             </div>
         </section>
 
-        <section id="contacto" class="bg-zinc-50">
+        <section id="contacto" class="bg-[#DCFCE7]">
             <div class="mx-auto w-[min(1100px,calc(100%-2rem))] py-20 md:py-28" data-reveal>
                 <div class="mb-12 flex items-center justify-center gap-4">
                     <div class="h-px w-14 bg-slate-200"></div>
-                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-6 py-2.5 text-sm font-mono font-bold tracking-widest text-[#E98332] uppercase">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-[#E98332]/30 bg-[#E98332]/10 px-8 py-3 text-base font-black tracking-widest text-[#E98332] uppercase md:px-10 md:text-lg">
                         
                         Contacto
                     </span>
@@ -738,7 +741,9 @@
                                             $tel = preg_replace('/\s+/', '', $phoneTrimmed);
                                         @endphp
                                         <div class="mt-1 flex items-center gap-2">
-                                            <i class="fa-brands fa-whatsapp text-[#008D62]"></i>
+                                            <svg viewBox="0 0 24 24" class="size-4 text-[#008D62]" fill="currentColor" aria-hidden="true">
+                                                <path d="M12 2a10 10 0 0 0-8.66 15l-1.2 4.38 4.49-1.18A10 10 0 1 0 12 2Zm0 18.18a8.16 8.16 0 0 1-4.15-1.13l-.3-.18-2.67.7.72-2.6-.2-.3a8.18 8.18 0 1 1 6.6 3.5Zm4.47-5.8c-.25-.13-1.48-.73-1.7-.82-.23-.08-.4-.12-.56.13-.17.25-.65.82-.8.98-.14.17-.29.19-.54.07-.25-.12-1.05-.39-2-1.26-.74-.65-1.24-1.45-1.38-1.7-.15-.25-.02-.38.1-.5.1-.1.25-.27.37-.4.12-.12.16-.2.25-.35.08-.17.04-.3-.02-.44-.06-.13-.56-1.35-.77-1.84-.2-.49-.4-.42-.56-.43h-.48c-.16 0-.43.06-.65.3-.22.25-.86.83-.86 2.02s.88 2.35 1 2.5c.13.17 1.73 2.63 4.18 3.7.58.25 1.03.4 1.38.5.58.18 1.1.15 1.51.1.47-.08 1.48-.6 1.69-1.18.2-.58.2-1.08.14-1.18-.06-.1-.23-.17-.48-.3Z"/>
+                                            </svg>
                                             <a class="font-mono text-sm text-zinc-900 transition-colors duration-200 ease-out hover:text-[#008D62]" href="tel:{{ $tel }}">{{ $phoneTrimmed }}</a>
                                         </div>
                                     @endforeach
@@ -750,13 +755,14 @@
             </div>
         </section>
 
-        <footer class="border-t border-black/10 bg-white py-12">
+        <footer class="border-t border-black/10 bg-[#DCFCE7]/95 py-12">
             <div class="mx-auto flex w-[min(1100px,calc(100%-2rem))] flex-col items-center gap-5 text-sm text-zinc-600 md:flex-row md:justify-between">
                 <p class="text-center font-medium md:text-left">© {{ now()->year }} Prefabricados Alesa</p>
                 <div class="flex flex-wrap items-center justify-center gap-6 font-semibold md:justify-end">
                     <a href="#inicio" class="transition-colors duration-200 hover:text-[#008D62]">Inicio</a>
                     <a href="#nosotros" class="transition-colors duration-200 hover:text-[#008D62]">Nosotros</a>
                     <a href="#productos" class="transition-colors duration-200 hover:text-[#008D62]">Productos</a>
+                    <a href="#galeria" class="transition-colors duration-200 hover:text-[#008D62]">Galería</a>
                     <a href="#contacto" class="transition-colors duration-200 hover:text-[#008D62]">Contacto</a>
                 </div>
             </div>
@@ -795,7 +801,9 @@
                     window.open(links[idx], '_blank', 'noopener');
                 "
             >
-                <i class="fa-brands fa-whatsapp text-2xl al-icon al-icon-up"></i>
+                <svg viewBox="0 0 24 24" class="size-7 al-icon al-icon-up" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2a10 10 0 0 0-8.66 15l-1.2 4.38 4.49-1.18A10 10 0 1 0 12 2Zm0 18.18a8.16 8.16 0 0 1-4.15-1.13l-.3-.18-2.67.7.72-2.6-.2-.3a8.18 8.18 0 1 1 6.6 3.5Zm4.47-5.8c-.25-.13-1.48-.73-1.7-.82-.23-.08-.4-.12-.56.13-.17.25-.65.82-.8.98-.14.17-.29.19-.54.07-.25-.12-1.05-.39-2-1.26-.74-.65-1.24-1.45-1.38-1.7-.15-.25-.02-.38.1-.5.1-.1.25-.27.37-.4.12-.12.16-.2.25-.35.08-.17.04-.3-.02-.44-.06-.13-.56-1.35-.77-1.84-.2-.49-.4-.42-.56-.43h-.48c-.16 0-.43.06-.65.3-.22.25-.86.83-.86 2.02s.88 2.35 1 2.5c.13.17 1.73 2.63 4.18 3.7.58.25 1.03.4 1.38.5.58.18 1.1.15 1.51.1.47-.08 1.48-.6 1.69-1.18.2-.58.2-1.08.14-1.18-.06-.1-.23-.17-.48-.3Z"/>
+                </svg>
             </a>
         @endif
 
